@@ -3,49 +3,48 @@
   "info": {
     "title": "User management API",
     "version": "1.0.0",
-    "description": "This API offers endpoints for user administration, including user creation, activation, deactivation, deletion, and license management. Access to these endpoints is limited to users with Tenant Admin privileges."
+    "description": "APIs for User management and license administration. These endpoints allow Tenant Admins to manage Users, subscriptions, licenses, and user activation status within a tenant."
   },
-  "servers": [
+ "servers": [
     {
-      "url": "{accelqLoginUrl}/awb/api/2.0/{tenantCode}",
+      "url": "{accelqLoginUrl}/awb/api/2.0/{tenant_code}",
       "variables": {
         "accelqLoginUrl": {
-          "default": "",
-          "description": "Base URL for AccelQ login"
+          "default": "https://org.accelq.io",
+          "description": "The AccelQ login URL for API access."
         },
-        "tenantCode": {
-          "default": "your-tenant",
-          "description": "Tenant code for your subscription"
+        "tenant_code": {
+          "default": "TenantCode",
+          "description": "Tenant code for identifying the organization."
         }
       }
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "UserId": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "user_id",
+        "description": "Login Email."
+      },
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "api_key",
+        "description": "API Key found under Auth Properties in ACCELQ User Profile."
+      }
+    }
+  },
+  "security": [{ "UserId": [], "ApiKey": [] }],
   "paths": {
     "/administration/subscriptions": {
       "get": {
         "tags": ["Subscription Management"],
-        "summary": "Retrieve subscription information",
-        "description": "Retrieves a comprehensive list of all Subscriptions, including detailed information about their associated licenses.",
+        "summary": "List subscriptions",
+        "description": "Returns all subscriptions available in the tenant along with their associated license bundles and usage details.",
         "operationId": "getSubscriptions",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
         ],
         "responses": {
           "200": {
@@ -183,24 +182,6 @@
         "description": "Retrieve a list of all users in the tenant, including their assigned licenses and Project roles.",
         "operationId": "getAllUsers",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
         ],
         "responses": {
           "200": {
@@ -335,28 +316,10 @@
       },
       "post": {
         "tags": ["User Administration"],
-        "summary": "Create a new user",
-        "description": "Create a new user with specified licenses and project assignments.",
+        "summary": "Create User",
+        "description": "Creates a new user in the tenant and assigns licenses and project roles as specified.",
         "operationId": "createUser",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
         ],
         "requestBody": {
           "required": true,
@@ -624,8 +587,8 @@
     "/administration/users/{userPid}": {
       "delete": {
         "tags": ["User Administration"],
-        "summary": "Delete a user",
-        "description": "Delete a user by their userPid",
+        "summary": "Delete User",
+        "description": "Deletes the specified User from the tenant.",
         "operationId": "deleteUser",
         "parameters": [
           {
@@ -636,24 +599,6 @@
               "type": "string"
             },
             "description": "Unique identifier of the user to be deleted"
-          },
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
           }
         ],
         "responses": {
@@ -715,28 +660,10 @@
     "/administration/users/activate": {
       "put": {
         "tags": ["User Administration"],
-        "summary": "Activate or schedule activation of a user",
-        "description": "Activate a user immediately or schedule their activation for a specific period.",
+        "summary": "Activate or schedule activation of a User",
+        "description": "Activates a User immediately or for a specified date range.",
         "operationId": "activateUser",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
         ],
         "requestBody": {
           "required": true,
@@ -933,8 +860,8 @@
     "/administration/users/deactivate/{userPid}": {
       "put": {
         "tags": ["User Administration"],
-        "summary": "Deactivates a user",
-        "description": "Deactivate a user by their userPid",
+        "summary": "Deactivate User",
+        "description": "Deactivates the specified User",
         "operationId": "deactivateUser",
         "parameters": [
           {
@@ -945,24 +872,6 @@
               "type": "integer"
             },
             "description": "Unique identifier of the user"
-          },
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
           }
         ],
         "responses": {
@@ -1037,28 +946,10 @@
     "/administration/users/license": {
       "put": {
         "tags": ["User Administration"],
-        "summary": "Assign licenses to a user",
-        "description": "Assign or update one or more licenses for a user by specifying the relevant subscription and license details.",
+        "summary": "Assign license to User",
+        "description": "Assigns or updates license bundles for the specified user.",
         "operationId": "assignUserLicense",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
         ],
         "requestBody": {
           "required": true,

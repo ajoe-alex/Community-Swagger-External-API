@@ -3,54 +3,52 @@
   "info": {
     "title": "Job management API",
     "version": "1.0.0",
-    "description": "API for creating job configurations and running jobs. User must have privilege on respective Project to execute these APIs."
+    "description": "APIs for configuring and executing test jobs in AccelQ. These endpoints allow users to create reusable job templates, schedule recurring executions, and trigger on-demand test runs for Scenarios or Test Suites within a project. Job execution is handled by available AccelQ agents using the provided environment, execution, and runtime configurations."
   },
   "servers": [
     {
-      "url": "{accelqLoginUrl}/awb/api/2.0/{tenantCode}/{projectCode}",
+      "url": "{accelqLoginUrl}/awb/api/2.0/{tenant_code}/{projectCode}",
       "variables": {
         "accelqLoginUrl": {
-          "default": "",
-          "description": "Base URL for AccelQ login"
+          "default": "https://org.accelq.io",
+          "description": "The AccelQ login URL for API access."
         },
-        "tenantCode": {
-          "default": "your-tenant",
+        "tenant_code": {
+          "default": "TenantCode",
           "description": "Tenant code for identifying the organization."
         },
         "projectCode": {
-          "default": "your-project",
-          "description": "Project code for identifying the project within the tenant."
+          "default": "ProjectCode",
+          "description": "Project Code found under Auth properties of ACCELQ User Profile"
         }
       }
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "UserId": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "user_id",
+        "description": "Login Email."
+      },
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "api_key",
+        "description": "API Key found under Auth Properties in ACCELQ User Profile."
+      }
+    }
+  },
+  "security": [{ "UserId": [], "ApiKey": [] }],
   "paths": {
     "/test-exec/jobs/recurring": {
       "post": {
         "tags": ["Jobs"],
-        "summary": "Create a new Recurring Test Job",
-        "description": "Creates a new recurring test job for the specified project based on the provided job configuration. This API sets up a recurrence template for the job, with actual job runs being triggered automatically when the specified recurrence conditions are met.",
+        "summary": "Create recurring test job",
+        "description": "Creates a recurring test job template that automatically triggers executions based on the specified recurrence rules.",
         "operationId": "createRecurringTestJob",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -404,8 +402,8 @@
                       },
                       "notificationMode": {
                         "type": "string",
-                        "example": "ON ERROR",
-                        "description": "Specifies the case where notification email to be sent. Accepted values are 'NONE','ALWAYS','ON ERROR'. Defaults to 'NONE' if not provided."
+                        "example": "ON_ERROR",
+                        "description": "Specifies the case where notification email to be sent. Accepted values are 'NONE','ALWAYS','ON_ERROR'. Defaults to 'NONE' if not provided."
                       },
                       "notificationEmails": {
                         "type": "array",
@@ -448,7 +446,7 @@
                         "example": 5,
                         "description": "Specifies total number of maximum reruns attempts."
                       },
-                      "delayBetweenRerun": {
+                      "delayBetweenReruns": {
                         "type": "number",
                         "example": 3,
                         "description": "Specifies delay between each Re-run attempt in minutes."
@@ -635,6 +633,451 @@
                     }
                   }
                 }
+              },
+              "examples": {
+                "Browser Execution": {
+                  "value": {
+                    "recurrenceInfo": {
+                      "DTSTART": "2024-04-21T10:30",
+                      "RRULE": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,TH,SA;COUNT=6",
+                      "timeZone": "+05:30"
+                    },
+                    "runEntityType": "SCENARIO",
+                    "scnPid": 15,
+                    "purpose": "ACME INC ticket booking.",
+                    "appEnvironmentName": "Staging",
+                    "screenshotMode": "OPTIMAL",
+                    "loggerLevel": "STANDARD",
+                    "runProperties": {
+                      "todayPrice": "2000",
+                      "totalTest": "5"
+                    },
+                    "executionParameters": {
+                      "retryCount": "2",
+                      "platform": "windows"
+                    },
+                    "timeOuts": {
+                      "pageLoadWaitTime": 50,
+                      "elementWaitTime": 40,
+                      "apiTimeout": 60
+                    },
+                    "agentInfo": {
+                      "agentSelectionType": "BY_AVAILABILITY",
+                      "agentByAvailabilityInfo": {
+                        "namePattern": "Prod_*",
+                        "agentCountForJobDistribution": 3
+                      },
+                      "numOfParallelRuns": 2,
+                      "browserExecution": {
+                        "browser": {
+                          "name": "EDGE",
+                          "version": "12.54"
+                        },
+                        "targetDeviceType": "DESKTOP",
+                        "desktopDevice": {
+                          "os": "MacOS",
+                          "osVersion": "11",
+                          "emulatedDeviceName": "Android Phone 393 x 851"
+                        },
+                        "browserKeepAlive": true,
+                        "enableWebAccessibilityTesting": true,
+                        "enableWebPerformanceTesting": true,
+                        "webPerformanceSlaThreshold": 10,
+                        "webDriverProfileName": "Web Driver Profile 1"
+                      }
+                    },
+                    "enableSelfHealing": true,
+                    "notifications": {
+                      "notifyOnStart": true,
+                      "notifyOnCompletion": true,
+                      "notificationMode": "ON ERROR",
+                      "notificationEmails": [
+                        "demo1@acmeInc.com",
+                        "demo2@acmeInc.com"
+                      ],
+                      "notificationChannels": {
+                        "slackChannels": ["Slack-channel-1"],
+                        "teamsChannels": ["QA-Team", "PKN-team"]
+                      }
+                    },
+                    "autoRerun": {
+                      "failurePercentageLimit": 10,
+                      "maxRerunAttempts": 5,
+                      "delayBetweenRerun": 3,
+                      "rerunOnNoImprovement": false
+                    },
+                    "setup": {
+                      "testCaseSetup": {
+                        "actionPid": 14,
+                        "actionInputParams": [
+                          {
+                            "name": "configPath",
+                            "valueType": "LITERAL",
+                            "value": "/configs/settings.json"
+                          },
+                          {
+                            "name": "maxRetries",
+                            "valueType": "GLOBAL_PROPERTY",
+                            "value": "GP 2"
+                          }
+                        ]
+                      },
+                      "testJobSetup": {
+                        "actionPid": 19,
+                        "actionInputParams": [
+                          {
+                            "name": "retryCount",
+                            "value": "3"
+                          }
+                        ]
+                      }
+                    },
+                    "teardown": {
+                      "testCaseTeardown": {
+                        "actionPid": 13,
+                        "actionInputParams": [
+                          {
+                            "name": "filePath",
+                            "valueType": "LITERAL",
+                            "value": "/users/data.csv"
+                          },
+                          {
+                            "name": "transactionLimit",
+                            "valueType": "GLOBAL_PROPERTY",
+                            "value": "GP 1"
+                          }
+                        ]
+                      },
+                      "testJobTeardown": {
+                        "actionPid": 18,
+                        "actionInputParams": [
+                          {
+                            "name": "userAge",
+                            "value": "21"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "Mobile Application Execution": {
+                  "value": {
+                    "recurrenceInfo": {
+                      "DTSTART": "2024-04-21T10:30",
+                      "RRULE": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,TH,SA;COUNT=6",
+                      "timeZone": "+05:30"
+                    },
+                    "runEntityType": "SCENARIO",
+                    "scnPid": 15,
+                    "purpose": "ACME INC ticket booking.",
+                    "appEnvironmentName": "Staging",
+                    "screenshotMode": "OPTIMAL",
+                    "loggerLevel": "STANDARD",
+                    "runProperties": {
+                      "todayPrice": "2000",
+                      "totalTest": "5"
+                    },
+                    "executionParameters": {
+                      "retryCount": "2",
+                      "platform": "windows"
+                    },
+                    "timeOuts": {
+                      "pageLoadWaitTime": 50,
+                      "elementWaitTime": 40,
+                      "apiTimeout": 60
+                    },
+                    "agentInfo": {
+                      "agentSelectionType": "BY_AVAILABILITY",
+                      "agentByAvailabilityInfo": {
+                        "namePattern": "Prod_*",
+                        "agentCountForJobDistribution": 3
+                      },
+                      "numOfParallelRuns": 2,
+                      "mobileAppTesting": {
+                        "mobileExecutionDevices": [
+                          {
+                            "refName": "device 1",
+                            "deviceName": "Iphone 15",
+                            "os": "ios",
+                            "osVersion": 15,
+                            "appiumDriverUrl": "http://localhost:4723",
+                            "webDriverAgentUrl": "127.0.0.1:50092"
+                          }
+                        ],
+                        "mobileDriverProfileName": "Mobile Driver Profile 3",
+                        "mobileKeepAlive": false,
+                        "skipReinstall": false
+                      }
+                    },
+                    "enableSelfHealing": true,
+                    "notifications": {
+                      "notifyOnStart": true,
+                      "notifyOnCompletion": true,
+                      "notificationMode": "ON ERROR",
+                      "notificationEmails": [
+                        "demo1@acmeInc.com",
+                        "demo2@acmeInc.com"
+                      ],
+                      "notificationChannels": {
+                        "slackChannels": ["Slack-channel-1"],
+                        "teamsChannels": ["QA-Team", "PKN-team"]
+                      }
+                    },
+                    "autoRerun": {
+                      "failurePercentageLimit": 10,
+                      "maxRerunAttempts": 5,
+                      "delayBetweenRerun": 3,
+                      "rerunOnNoImprovement": false
+                    },
+                    "setup": {
+                      "testCaseSetup": {
+                        "actionPid": 14,
+                        "actionInputParams": [
+                          {
+                            "name": "configPath",
+                            "valueType": "LITERAL",
+                            "value": "/configs/settings.json"
+                          },
+                          {
+                            "name": "maxRetries",
+                            "valueType": "GLOBAL_PROPERTY",
+                            "value": "GP 2"
+                          }
+                        ]
+                      },
+                      "testJobSetup": {
+                        "actionPid": 19,
+                        "actionInputParams": [
+                          {
+                            "name": "retryCount",
+                            "value": "3"
+                          }
+                        ]
+                      }
+                    },
+                    "teardown": {
+                      "testCaseTeardown": {
+                        "actionPid": 13,
+                        "actionInputParams": [
+                          {
+                            "name": "filePath",
+                            "valueType": "LITERAL",
+                            "value": "/users/data.csv"
+                          },
+                          {
+                            "name": "transactionLimit",
+                            "valueType": "GLOBAL_PROPERTY",
+                            "value": "GP 1"
+                          }
+                        ]
+                      },
+                      "testJobTeardown": {
+                        "actionPid": 18,
+                        "actionInputParams": [
+                          {
+                            "name": "userAge",
+                            "value": "21"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "Agent Selection By Name":{
+                  "value": {
+                    "recurrenceInfo": {
+                      "DTSTART": "2024-04-21T10:30",
+                      "RRULE": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,TH,SA;COUNT=6",
+                      "timeZone": "+05:30"
+                    },
+                    "runEntityType": "SCENARIO",
+                    "scnPid": 15,
+                    "purpose": "ACME INC ticket booking.",
+                    "appEnvironmentName": "Staging",
+                    "screenshotMode": "OPTIMAL",
+                    "loggerLevel": "STANDARD",
+                    "runProperties": {
+                      "todayPrice": "2000",
+                      "totalTest": "5"
+                    },
+                    "executionParameters": {
+                      "retryCount": "2",
+                      "platform": "windows"
+                    },
+                    "timeOuts": {
+                      "pageLoadWaitTime": 50,
+                      "elementWaitTime": 40,
+                      "apiTimeout": 60
+                    },
+                    "agentInfo": {
+                      "agentSelectionType": "BY_NAME",
+                      "agentNames": ["Prod_Agent1"],
+                      "numOfParallelRuns": 2,
+                      "browserExecution": {
+                        "browser": {
+                          "name": "EDGE",
+                          "version": "12.54"
+                        },
+                        "targetDeviceType": "DESKTOP",
+                        "desktopDevice": {
+                          "os": "MacOS",
+                          "osVersion": "11",
+                          "emulatedDeviceName": "Android Phone 393 x 851"
+                        },
+                        "browserKeepAlive": true,
+                        "enableWebAccessibilityTesting": true,
+                        "enableWebPerformanceTesting": true,
+                        "webPerformanceSlaThreshold": 10,
+                        "webDriverProfileName": "Web Driver Profile 1"
+                      }
+                    },
+                    "enableSelfHealing": true,
+                    "notifications": {
+                      "notifyOnStart": true,
+                      "notifyOnCompletion": true,
+                      "notificationMode": "ON ERROR",
+                      "notificationEmails": [
+                        "demo1@acmeInc.com",
+                        "demo2@acmeInc.com"
+                      ],
+                      "notificationChannels": {
+                        "slackChannels": ["Slack-channel-1"],
+                        "teamsChannels": ["QA-Team", "PKN-team"]
+                      }
+                    },
+                    "autoRerun": {
+                      "failurePercentageLimit": 10,
+                      "maxRerunAttempts": 5,
+                      "delayBetweenRerun": 3,
+                      "rerunOnNoImprovement": false
+                    },
+                    "setup": {
+                      "testCaseSetup": {
+                        "actionPid": 14,
+                        "actionInputParams": [
+                          {
+                            "name": "configPath",
+                            "valueType": "LITERAL",
+                            "value": "/configs/settings.json"
+                          },
+                          {
+                            "name": "maxRetries",
+                            "valueType": "GLOBAL_PROPERTY",
+                            "value": "GP 2"
+                          }
+                        ]
+                      },
+                      "testJobSetup": {
+                        "actionPid": 19,
+                        "actionInputParams": [
+                          {
+                            "name": "retryCount",
+                            "value": "3"
+                          }
+                        ]
+                      }
+                    },
+                    "teardown": {
+                      "testCaseTeardown": {
+                        "actionPid": 13,
+                        "actionInputParams": [
+                          {
+                            "name": "filePath",
+                            "valueType": "LITERAL",
+                            "value": "/users/data.csv"
+                          },
+                          {
+                            "name": "transactionLimit",
+                            "valueType": "GLOBAL_PROPERTY",
+                            "value": "GP 1"
+                          }
+                        ]
+                      },
+                      "testJobTeardown": {
+                        "actionPid": 18,
+                        "actionInputParams": [
+                          {
+                            "name": "userAge",
+                            "value": "21"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "Agent By Availability": {
+                  "value": {
+                    "recurrenceInfo": {
+                      "DTSTART": "2024-04-21T10:30",
+                      "RRULE": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,TH,SA;COUNT=6",
+                      "timeZone": "+05:30"
+                    },
+                    "runEntityType": "SCENARIO",
+                    "scnPid": 15,
+                    "purpose": "ACME INC ticket booking.",
+                    "appEnvironmentName": "Staging",
+                    "screenshotMode": "OPTIMAL",
+                    "loggerLevel": "STANDARD",
+                    "runProperties": {
+                      "todayPrice": "2000",
+                      "totalTest": "5"
+                    },
+                    "executionParameters": {
+                      "retryCount": "2",
+                      "platform": "windows"
+                    },
+                    "timeOuts": {
+                      "pageLoadWaitTime": 50,
+                      "elementWaitTime": 40,
+                      "apiTimeout": 60
+                    },
+                    "agentInfo": {
+                      "agentSelectionType": "BY_AVAILABILITY",
+                      "agentByAvailabilityInfo": {
+                        "namePattern": "Prod_*",
+                        "agentCountForJobDistribution": 3
+                      },
+                      "numOfParallelRuns": 2,
+                      "browserExecution": {
+                        "browser": {
+                          "name": "EDGE",
+                          "version": "12.54"
+                        },
+                        "targetDeviceType": "DESKTOP",
+                        "desktopDevice": {
+                          "os": "MacOS",
+                          "osVersion": "11",
+                          "emulatedDeviceName": "Android Phone 393 x 851"
+                        },
+                        "browserKeepAlive": true,
+                        "enableWebAccessibilityTesting": true,
+                        "enableWebPerformanceTesting": true,
+                        "webPerformanceSlaThreshold": 10,
+                        "webDriverProfileName": "Web Driver Profile 1"
+                      }
+                    },
+                    "enableSelfHealing": true,
+                    "notifications": {
+                      "notifyOnStart": true,
+                      "notifyOnCompletion": true,
+                      "notificationMode": "ON ERROR",
+                      "notificationEmails": [
+                        "demo1@acmeInc.com",
+                        "demo2@acmeInc.com"
+                      ],
+                      "notificationChannels": {
+                        "slackChannels": ["Slack-channel-1"],
+                        "teamsChannels": ["QA-Team", "PKN-team"]
+                      }
+                    },
+                    "autoRerun": {
+                      "failurePercentageLimit": 10,
+                      "maxRerunAttempts": 5,
+                      "delayBetweenRerun": 3,
+                      "rerunOnNoImprovement": false
+                    }
+                  }
+                }
               }
             }
           }
@@ -796,7 +1239,7 @@
                   "invalidNotificationMode": {
                     "summary": "Invalid notification mode",
                     "value": {
-                      "error": "Invalid notification mode. Accepted values are 'NONE','ALWAYS', 'ON ERROR'."
+                      "error": "Invalid notification mode. Accepted values are 'NONE','ALWAYS', 'ON_ERROR'."
                     }
                   },
                   "maxRerunAttempsInvalid": {
@@ -908,29 +1351,10 @@
     "/test-exec/jobs/run": {
       "post": {
         "tags": ["Jobs"],
-        "summary": "Configure and Run a new Test Job instantly",
-        "description": "Initiates a test job immediately with the specified project configuration. The job begins execution as soon as an agent becomes available.",
+        "summary": "Run test job",
+        "description": "Triggers an immediate execution of a Scenario or Test Suite using the provided job configuration. The job is queued and starts running as soon as a suitable agent becomes available.",
         "operationId": "runTestJob",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -1258,8 +1682,8 @@
                       },
                       "notificationMode": {
                         "type": "string",
-                        "example": "ON ERROR",
-                        "description": "Specifies the case where notification email to be sent. Accepted values are 'NONE','ALWAYS','ON ERROR'. Defaults to 'NONE' if not provided."
+                        "example": "ON_ERROR",
+                        "description": "Specifies the case where notification email to be sent. Accepted values are 'NONE','ALWAYS','ON_ERROR'. Defaults to 'NONE' if not provided."
                       },
                       "notificationEmails": {
                         "type": "array",
@@ -1302,7 +1726,7 @@
                         "example": 5,
                         "description": "Specifies total number of maximum reruns attempts."
                       },
-                      "delayBetweenRerun": {
+                      "delayBetweenReruns": {
                         "type": "number",
                         "example": 3,
                         "description": "Specifies delay between each Re-run attempt in minutes."
@@ -1624,7 +2048,7 @@
                   "invalidNotificationMode": {
                     "summary": "Invalid notification mode",
                     "value": {
-                      "error": "Invalid notification mode. Accepted values are 'NONE','ALWAYS', 'ON ERROR'."
+                      "error": "Invalid notification mode. Accepted values are 'NONE','ALWAYS', 'ON_ERROR'."
                     }
                   },
                   "maxRerunAttempsInvalid": {
@@ -1736,28 +2160,10 @@
     "/test-exec/jobs/templates": {
       "get": {
         "tags": ["Jobs"],
-        "summary": "Get all Template Test Jobs",
-        "description": "This API retrieves a comprehensive list of all template jobs that have been created and associated with a specific project.",
+        "summary": "List Job templates",
+        "description": "This API retrieves list of all template jobs that have been created and associated with a specific project.",
         "operationId": "getTemplateTestJobs",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          },
           {
             "name": "page",
             "in": "query",
@@ -1900,29 +2306,10 @@
       },
       "post": {
         "tags": ["Jobs"],
-        "summary": "Create a new Template Test Job",
-        "description": "Creates a new template test job for the specified project using the provided job configuration. This does not execute the job but serves as a template that stores the job configurations. Actual job runs can be triggered externally as needed, using the job ID of the template created by this API.",
+        "summary": "Create Job template",
+        "description": "Creates a reusable job template that stores execution configuration for a Scenario or Test Suite. The executions can be triggered on demand using this job template Id",
         "operationId": "createTemplateTestJob",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -2250,8 +2637,8 @@
                       },
                       "notificationMode": {
                         "type": "string",
-                        "example": "ON ERROR",
-                        "description": "Specifies the case where notification email to be sent. Accepted values are 'NONE','ALWAYS','ON ERROR'. Defaults to 'NONE' if not provided."
+                        "example": "ON_ERROR",
+                        "description": "Specifies the case where notification email to be sent. Accepted values are 'NONE','ALWAYS','ON_ERROR'. Defaults to 'NONE' if not provided."
                       },
                       "notificationEmails": {
                         "type": "array",
@@ -2294,7 +2681,7 @@
                         "example": 5,
                         "description": "Specifies total number of maximum reruns attempts."
                       },
-                      "delayBetweenRerun": {
+                      "delayBetweenReruns": {
                         "type": "number",
                         "example": 3,
                         "description": "Specifies delay between each Re-run attempt in minutes."
@@ -2622,7 +3009,7 @@
                   "invalidNotificationMode": {
                     "summary": "Invalid notification mode",
                     "value": {
-                      "error": "Invalid notification mode. Accepted values are 'NONE','ALWAYS', 'ON ERROR'."
+                      "error": "Invalid notification mode. Accepted values are 'NONE','ALWAYS', 'ON_ERROR'."
                     }
                   },
                   "maxRerunAttempsInvalid": {
@@ -2734,28 +3121,10 @@
     "/test-exec/jobs/templates/{templateJobId}/run": {
       "post": {
         "tags": ["Jobs"],
-        "summary": "Instantiates a run from the template job",
-        "description": "This API Instantiates a new job run by applying the configuration associated with the provided template job ID.",
+        "summary": "Trigger Run from Job template",
+        "description": "Creates a new job run using the configuration stored in the specified job template. Optional run properties can be overridden for this execution.",
         "operationId": "templateTestJobRun",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          },
           {
             "name": "templateJobId",
             "in": "path",
@@ -2830,27 +3199,9 @@
     "/test-exec/runs/manual/{runPid}/tc-summary-by-users": {
       "get": {
         "tags": ["Runs"],
-        "summary": "Fetch test case status summary by users of manul test run ",
-        "description": "It fetches summary of all test cases status updated by each user for a specific test run. It helps tracking user-wise contributions and changes made during that run.",
+        "summary": "Get manual run test case summary by users",
+        "description": "Returns a user-wise summary of test case status updates for the specified manual test run. This helps identify which users updated which test cases during the run.",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          },
           {
             "name": "runPid",
             "in": "path",
