@@ -7,13 +7,13 @@
   },
   "servers": [
     {
-      "url": "{accelqLoginUrl}/awb/api/2.0/{tenant_code}/{projectCode}",
+      "url": "{accelqLoginUrl}/awb/api/2.0/{tenantCode}/{projectCode}",
       "variables": {
         "accelqLoginUrl": {
           "default": "https://org.accelq.io",
           "description": "The AccelQ login URL for API access."
         },
-        "tenant_code": {
+        "tenantCode": {
           "default": "TenantCode",
           "description": "Tenant code for identifying the organization."
         },

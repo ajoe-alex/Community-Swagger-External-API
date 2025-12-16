@@ -13,7 +13,7 @@
           "default": "https://org.accelq.io",
           "description": "The AccelQ login URL for API access."
         },
-        "tenant_code": {
+        "tenantCode": {
           "default": "TenantCode",
           "description": "Tenant code for identifying the organization."
         }
