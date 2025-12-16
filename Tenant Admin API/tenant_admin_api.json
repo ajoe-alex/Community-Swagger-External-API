@@ -3,49 +3,53 @@
   "info": {
     "title": "Tenant Admin API",
     "version": "1.0.0",
-    "description": "API to exercise Tenant Admin functionality including Project creation etc. User must have Tenant Admin privilege to execute these APIs."
+    "description": "APIs for managing tenant-level administration, including project creation, updates, cloning, and configuration. Access is restricted to users with Tenant Admin privileges."
   },
   "servers": [
     {
       "url": "{accelqLoginUrl}/awb/api/2.0/{tenantCode}",
       "variables": {
         "accelqLoginUrl": {
-          "default": "",
-          "description": "Base URL for AccelQ login"
+          "default": "https://org.accelq.io",
+          "description": "The AccelQ login URL for API access."
         },
         "tenantCode": {
-          "default": "your-tenant",
-          "description": "Tenant code for your subscription"
+          "default": "TenantCode",
+          "description": "Tenant code for identifying the organization."
         }
       }
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "UserId": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "user_id",
+        "description": "Login Email."
+      },
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "api_key",
+        "description": "API Key found under Auth Properties in ACCELQ User Profile."
+      }
+    }
+  },
+  "security": [
+    {
+      "UserId": [],
+      "ApiKey": []
     }
   ],
   "paths": {
     "/administration/projects": {
       "get": {
         "tags": ["Projects"],
-        "summary": "Retrieve list of Projects in the Tenant",
-        "description": "Retrieve paginated list of Projects in the Tenant.",
+        "summary": "List projects",
+        "description": "Returns a paginated list of all projects available within the tenant.",
         "operationId": "getProjects",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          },
           {
             "name": "page",
             "in": "query",
@@ -259,28 +263,9 @@
       },
       "post": {
         "tags": ["Projects"],
-        "summary": "Create a new Project",
+        "summary": "Create project",
         "description": "Create a new project in the Tenant. Project name must adhere to the following criteria: <br/>   &nbsp; &nbsp; 1.Must always start with a alphabetic character<br/>   &nbsp; &nbsp; 2.Maximum length of 256 characters <br/>   &nbsp; &nbsp; 3.Only letters, digits, spaces, and underscores  allowed",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -490,28 +475,10 @@
     "/administration/projects/{pjPid}/clone": {
       "post": {
         "tags": ["Projects"],
-        "summary": "Clone a Project",
-        "description": "Clone an existing project and create a new one with an optional branching.",
+        "summary": "Clone project",
+        "description": "Creates a new project by cloning configuration from an existing project.",
         "operationId": "cloneProject",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          },
           {
             "name": "pjPid",
             "in": "path",
@@ -529,6 +496,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required":["projectName"],
                 "properties": {
                   "projectName": {
                     "type": "string",
@@ -643,8 +611,8 @@
     "/administration/projects/{pjPid}": {
       "put": {
         "tags": ["Projects"],
-        "summary": "Update an existing Project",
-        "description": "Update the details (name and description) of an existing project.",
+        "summary": "Update project",
+        "description": "Updates the name and description of an existing project identified by its Pid.",
         "operationId": "updateProject",
         "parameters": [
           {
@@ -656,24 +624,6 @@
               "type": "integer",
               "example": 3
             }
-          },
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
           }
         ],
         "requestBody": {
@@ -739,29 +689,10 @@
     "/administration/projects/requirement-traceability/configure": {
       "patch": {
         "tags": ["Requirement Traceability Configuration"],
-        "summary": "Configures Requirement Traceability integration for given Projects",
+        "summary": "Configure requirement traceability",
         "description": "This API configures Requirements Traceability Integration within the Project Configuration for a specified list of projects. It must be executed by a Tenant Admin to ensure access to all listed projects. \n\n **Note:** Any existing Requirements Traceability configuration will be overwritten. However, currently mapped tickets/stories from these integrations will be retained.",
         "operationId": "bulkExtIntegration",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -812,7 +743,7 @@
                       },
                       "connectionMode": {
                         "type": "string",
-                        "enum":["BROWSER","SERVER"],
+                        "enum": ["BROWSER", "SERVER"],
                         "description": "Communication with your Jira instance can be routed either from the user’s browser or from ACCELQ server. If your Jira server is blocked from outside access, choose the BROWSER option.",
                         "example": "BROWSER"
                       }

@@ -3,76 +3,64 @@
   "info": {
     "title": "Scenario API",
     "version": "1.0.0",
-    "description": "The AccelQ Scenario API provides comprehensive endpoints for retrieving and updating test scenarios within your AccelQ projects.\n\nThis RESTful API enables you to:\n- Retrieve Scenario details with advanced filtering and pagination support\n- Perform bulk updates on multiple Scenarios simultaneously \n\n**Authentication**: All endpoints require valid user credentials (`user_id`) and API key (`api_key`) passed as headers."
+    "description": "APIs for retrieving and updating test Scenarios within an AccelQ project. These endpoints support advanced filtering, pagination, and bulk updates for efficient Scenario management."
   },
   "servers": [
     {
-      "url": "{accelqLoginUrl}/awb/api/2.0/{tenantCode}/{projectName}",
+      "url": "{accelqLoginUrl}/awb/api/2.0/{tenantCode}/{projectCode}",
       "variables": {
         "accelqLoginUrl": {
-          "default": "",
-          "description": "Base URL for AccelQ application"
+          "default": "https://org.accelq.io",
+          "description": "The AccelQ login URL for API access."
         },
         "tenantCode": {
-          "default": "accelq",
-          "description": "Tenant code for your subscription"
+          "default": "TenantCode",
+          "description": "Tenant code for identifying the organization."
         },
-        "projectName": {
-          "default": "accelqProject",
-          "description": "Name of the project"
+        "projectCode": {
+          "default": "ProjectCode",
+          "description": "Project Code found under Auth properties of ACCELQ User Profile"
         }
       }
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "UserId": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "user_id",
+        "description": "Login Email."
+      },
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "api_key",
+        "description": "API Key found under Auth Properties in ACCELQ User Profile."
+      }
+    }
+  },
+  "security": [{ "UserId": [], "ApiKey": [] }],
   "paths": {
     "/scn/scenarios/{scenarioType}/fetch-details": {
       "post": {
-        "tags": [
-          "Scenario"
-        ],
-        "summary": "Retrieve Scenario details with advanced filtering and pagination support",
-        "description": "Fetches comprehensive information about test Scenarios within your project. This endpoint supports:\n\n- **Pagination**: Control response size with configurable page numbers and sizes (max 25 items per page)\n- **Flexible Filtering**: Filter by specific Scenario IDs or requirement traceability keys\n- **Optional Detailed Information**: Selectively include  Scenario metadata such as step details, requirement traceability in the response\n-  **Version Control**: Choose between base version or user's checked-out version of Scenarios",
+        "tags": ["Scenario"],
+        "summary": "Fetch Scenario details",
+        "description": "Fetches comprehensive information about test Scenarios within your project. This endpoint supports:\n\n- **Pagination**: Control response size with configurable page numbers and sizes (max 25 items per page)\n- **Flexible Filtering**: Filter by specific Scenario IDs or requirement traceability keys\n- **Optional Detailed Information**: Selectively include Scenario metadata such as step details, requirement traceability in the response\n- **Version Control**: Choose between base version or user's checked-out version of Scenarios",
         "operationId": "getScenarioStepDetails",
         "parameters": [
           {
             "name": "showMyView",
             "in": "query",
             "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false
-            },
-            "description": "Controls scenario version selection:\n- `false` (default): Returns base version of Scenarios regardless of your checked out activity\n- `true`: Returns user's checked-out version if available, otherwise falls back to base version"
-          },
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication. Obtain this from your AccelQ user profile."
+            "schema": { "type": "boolean", "default": false },
+            "description": "Controls scenario version selection:\n- false (default): Returns base version of Scenarios regardless of your checked out activity\n- true: Returns user's checked-out version if available, otherwise falls back to base version"
           },
           {
             "name": "scenarioType",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "auto",
-                "manual"
-              ]
-            },
+            "schema": { "type": "string", "enum": ["auto", "manual"] },
             "description": "Scenario Type"
           },
           {
@@ -80,21 +68,14 @@
             "in": "query",
             "required": false,
             "description": "Page number for pagination. Use this to navigate through large result sets efficiently.",
-            "schema": {
-              "type": "integer",
-              "default": 1,
-              "example": 1
-            }
+            "schema": { "type": "integer", "default": 1, "example": 1 }
           },
           {
             "name": "pageSize",
             "in": "query",
             "required": false,
             "description": "Number of Scenarios to return per page.\n\n**Constraints**:\n- Minimum: 1\n- Maximum: 25\n- Default: 20",
-            "schema": {
-              "type": "integer",
-              "example": 20
-            }
+            "schema": { "type": "integer", "example": 20 }
           }
         ],
         "requestBody": {
@@ -103,9 +84,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "scenarioIds"
-                ],
+                "required": ["scenarioIds"],
                 "properties": {
                   "filter": {
                     "type": "object",
@@ -113,26 +92,15 @@
                     "properties": {
                       "scenarioIds": {
                         "type": "array",
-                        "items": {
-                          "type": "integer"
-                        },
+                        "items": { "type": "integer" },
                         "description": "Optional. Specifies the list of Scenario IDs to filter the results. If not provided, information for all available scenarios will be retrieved.",
-                        "example": [
-                          1,
-                          3,
-                          8
-                        ]
+                        "example": [1, 3, 8]
                       },
                       "requirementKeys": {
                         "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
+                        "items": { "type": "string" },
                         "description": "Optional. List of requirement traceability keys used to filter scenarios. Returns all scenarios linked to any of the specified requirement keys.",
-                        "example": [
-                          "TP-12",
-                          "TP-59"
-                        ]
+                        "example": ["TP-12", "TP-59"]
                       }
                     }
                   },
@@ -166,22 +134,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "page": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "pageSize": {
-                      "type": "integer",
-                      "example": 10
-                    },
-                    "totalPages": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "totalCount": {
-                      "type": "integer",
-                      "example": 3
-                    },
+                    "page": { "type": "integer", "example": 1 },
+                    "pageSize": { "type": "integer", "example": 10 },
+                    "totalPages": { "type": "integer", "example": 1 },
+                    "totalCount": { "type": "integer", "example": 3 },
                     "results": {
                       "type": "array",
                       "items": {
@@ -257,13 +213,8 @@
                               },
                               "tags": {
                                 "type": "array",
-                                "items": {
-                                  "type": "string"
-                                },
-                                "example": [
-                                  "To be Reviewed",
-                                  "Smoke"
-                                ],
+                                "items": { "type": "string" },
+                                "example": ["To be Reviewed", "Smoke"],
                                 "description": "List of tags associated with the Scenario."
                               }
                             }
@@ -297,13 +248,8 @@
                           "requirementTraceability": {
                             "type": "array",
                             "description": "List of Requirement traceability keys associated to the Scenario",
-                            "items": {
-                              "type": "string"
-                            },
-                            "example": [
-                              "TP-22",
-                              "TP-49"
-                            ]
+                            "items": { "type": "string" },
+                            "example": ["TP-22", "TP-49"]
                           }
                         }
                       }
@@ -335,10 +281,7 @@
                               "Priority": "Low",
                               "New List": "true"
                             },
-                            "tags": [
-                              "To be Reviewed",
-                              "Smoke"
-                            ]
+                            "tags": ["To be Reviewed", "Smoke"]
                           }
                         },
                         {
@@ -358,10 +301,7 @@
                               "Priority": "High",
                               "New List": "true"
                             },
-                            "tags": [
-                              "Regression",
-                              "Critical"
-                            ]
+                            "tags": ["Regression", "Critical"]
                           }
                         },
                         {
@@ -381,9 +321,7 @@
                               "Priority": "Low",
                               "New List": "true"
                             },
-                            "tags": [
-                              "Smoke"
-                            ]
+                            "tags": ["Smoke"]
                           }
                         }
                       ]
@@ -465,10 +403,7 @@
                           "name": "Ticket Booking",
                           "description": "Scenario to test Ticket Booking functionality",
                           "isCheckedOutVersion": true,
-                          "requirementTraceability": [
-                            "TP-22",
-                            "TP-49"
-                          ]
+                          "requirementTraceability": ["TP-22", "TP-49"]
                         },
                         {
                           "id": 3,
@@ -552,42 +487,16 @@
     },
     "/scn/scenarios/{scenarioType}/bulk-update": {
       "patch": {
-        "tags": [
-          "Scenario"
-        ],
-        "summary": "Process multiple Scenario updates with granular control and configurations",
-        "description": "Provides efficient bulk updates of Scenario metadata through flexible, operation-based requests. This API allows different Scenarios to be updated with distinct criteria and configurations. Each object in the payload targets specific Scenario IDs and applies the defined metadata changes, providing granular control over batch modifications.",
+        "tags": ["Scenario"],
+        "summary": "Bulk update Scenario Requirement Traceability",
+        "description": "Updates requirement traceability for multiple Scenarios.",
         "operationId": "updateScenarios",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication. Obtain this from your AccelQ user profile."
-          },
           {
             "name": "scenarioType",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "auto",
-                "manual"
-              ]
-            },
+            "schema": { "type": "string", "enum": ["auto", "manual"] },
             "description": "Scenario Type"
           }
         ],
@@ -608,18 +517,9 @@
                   "properties": {
                     "scenarioIds": {
                       "type": "array",
-                      "items": {
-                        "type": "integer"
-                      },
+                      "items": { "type": "integer" },
                       "description": "List of Scenario IDs to integrate with requirements",
-                      "example": [
-                        1,
-                        2,
-                        3,
-                        4,
-                        5,
-                        10
-                      ]
+                      "example": [1, 2, 3, 4, 5, 10]
                     },
                     "requirementTraceability": {
                       "type": "object",
@@ -627,21 +527,13 @@
                       "properties": {
                         "requirementKeys": {
                           "type": "array",
-                          "items": {
-                            "type": "string"
-                          },
+                          "items": { "type": "string" },
                           "description": "List of requirement keys to associate with Scenarios",
-                          "example": [
-                            "key1",
-                            "Key3"
-                          ]
+                          "example": ["key1", "Key3"]
                         },
                         "updateType": {
                           "type": "string",
-                          "enum": [
-                            "OVERRIDE",
-                            "APPEND"
-                          ],
+                          "enum": ["OVERRIDE", "APPEND"],
                           "description": "Specifies the update behavior: OVERRIDE replaces existing requirements, APPEND adds new requirements to existing ones"
                         },
                         "externalIntegrationProject": {
@@ -655,30 +547,17 @@
                 },
                 "example": [
                   {
-                    "scenarioIds": [
-                      1,
-                      2
-                    ],
+                    "scenarioIds": [1, 2],
                     "requirementTraceability": {
-                      "requirementKeys": [
-                        "TP-11",
-                        "TP-31"
-                      ],
+                      "requirementKeys": ["TP-11", "TP-31"],
                       "updateType": "APPEND",
                       "externalIntegrationProject": "SanityWorkSpace"
                     }
                   },
                   {
-                    "scenarioIds": [
-                      98,
-                      102
-                    ],
+                    "scenarioIds": [98, 102],
                     "requirementTraceability": {
-                      "requirementKeys": [
-                        "TP-51",
-                        "TP-319",
-                        "TP-987"
-                      ],
+                      "requirementKeys": ["TP-51", "TP-319", "TP-987"],
                       "updateType": "OVERRIDE",
                       "externalIntegrationProject": "SanityWorkSpace"
                     }
@@ -698,36 +577,21 @@
                   "properties": {
                     "updatedEntities": {
                       "type": "array",
-                      "items": {
-                        "type": "integer"
-                      },
+                      "items": { "type": "integer" },
                       "description": "List of scenario IDs that were successfully updated",
-                      "example": [
-                        1,
-                        2,
-                        3
-                      ]
+                      "example": [1, 2, 3]
                     },
                     "notUpdatedOthersCheckedOutEntities": {
                       "type": "array",
-                      "items": {
-                        "type": "integer"
-                      },
+                      "items": { "type": "integer" },
                       "description": "Contains the scenario IDs that could not be updated due to being checked out by other users.",
-                      "example": [
-                        4,
-                        5
-                      ]
+                      "example": [4, 5]
                     },
                     "notFoundEntities": {
                       "type": "array",
-                      "items": {
-                        "type": "integer"
-                      },
+                      "items": { "type": "integer" },
                       "description": "List of scenario IDs that were not found",
-                      "example": [
-                        10
-                      ]
+                      "example": [10]
                     }
                   }
                 }
@@ -750,9 +614,7 @@
                 "examples": {
                   "nullRequestBody": {
                     "summary": "Null request body",
-                    "value": {
-                      "error": "Request Body cannot be null or empty"
-                    }
+                    "value": { "error": "Request Body cannot be null or empty" }
                   },
                   "noExternalIntegration": {
                     "summary": "External integration not configured",
@@ -762,9 +624,7 @@
                   },
                   "nullScenarioIds": {
                     "summary": "Missing Scenario IDs",
-                    "value": {
-                      "error": "scenarioIds cannot be null or empty"
-                    }
+                    "value": { "error": "scenarioIds cannot be null or empty" }
                   },
                   "nullRequirementKeys": {
                     "summary": "Missing requirement keys",

@@ -3,60 +3,59 @@
   "info": {
     "title": "Project Resource Management API",
     "version": "1.0.0",
-    "description": "This API allows users to manage resources related to project-specific configurations, such as run properties and string encryption, etc. Users must have authorized access to the specified project to execute these API operations."
+    "description": "APIs for managing project-level resources such as run properties and string encryption. Access is restricted to users authorized for the specified project."
   },
   "servers": [
     {
-      "url": "{accelqLoginUrl}/awb/api/2.0/{tenant_code}",
+      "url": "{accelqLoginUrl}/awb/api/2.0/{tenantCode}/{projectCode}",
       "variables": {
         "accelqLoginUrl": {
-          "default": "",
+          "default": "https://org.accelq.io",
           "description": "The AccelQ login URL for API access."
         },
-        "tenant_code": {
-          "default": "your-tenant",
+        "tenantCode": {
+          "default": "TenantCode",
           "description": "Tenant code for identifying the organization."
+        },
+        "projectCode": {
+          "default": "ProjectCode",
+          "description": "Project Code found under Auth properties of ACCELQ User Profile"
         }
       }
     }
   ],
+   "components": {
+    "securitySchemes": {
+      "UserId": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "user_id",
+        "description": "Login Email."
+      },
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "api_key",
+        "description": "API Key found under Auth Properties in ACCELQ User Profile."
+      }
+    }
+  },
+  "security": [
+    {
+      "UserId": [],
+      "ApiKey": []
+    }
+  ],
   "paths": {
-    "/{projectCode}/res/run-property": {
+    "/res/run-property": {
       "get": {
         "tags": [
           "Run Properties"
         ],
-        "summary": "Retrieve list of Run Properties for the project",
-        "description": "Get a list of Run Properties associated with the specified project.",
+        "summary": "List Run Properties",
+        "description": "Returns a paginated list of run properties configured for the current project.",
         "operationId": "getAllRunProperties",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          },
-          {
-            "name": "projectCode",
-            "in": "path",
-            "required": true,
-            "description": "The project code for which to retrieve Run Property.",
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "page",
             "in": "query",
@@ -278,38 +277,10 @@
         "tags": [
           "Run Properties"
         ],
-        "summary": "Create a new Run Property",
-        "description": "Create a new Run Property for the specified project.",
+        "summary": "Create Run Property",
+        "description": "Creates a new run property for the specified project.",
         "operationId": "createRunProperty",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          },
-          {
-            "name": "projectCode",
-            "in": "path",
-            "required": true,
-            "description": "The project code for which to create the Run Property.",
-            "schema": {
-              "type": "string",
-              "example": "proj123"
-            }
-          }
         ],
         "requestBody": {
           "required": true,
@@ -434,43 +405,15 @@
         }
       }
     },
-    "/{projectCode}/res/run-property/{runPropertyPid}": {
+    "/res/run-property/{runPropertyPid}": {
       "put": {
         "tags": [
           "Run Properties"
         ],
         "summary": "Update Run Property",
-        "description": "Update name of the Run Property.",
+        "description": "Updates the name of an existing run property identified by its PID.",
         "operationId": "updateRunProperty",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          },
-          {
-            "name": "projectCode",
-            "in": "path",
-            "required": true,
-            "description": "The project code for which to update the Run Property.",
-            "schema": {
-              "type": "string",
-              "example": "proj123"
-            }
-          },
           {
             "name": "runPropertyPid",
             "in": "path",
@@ -599,44 +542,15 @@
         }
       }
     },
-    "/{projectCode}/res/encrypt": {
+    "/res/encrypt": {
       "get": {
         "tags": [
           "Encryption"
         ],
-        "summary": "Encrypts a string.",
-        "description": "Converts the input string into an encrypted string.",
+        "summary": "Encrypt string.",
+        "description": "Encrypts the provided input string and returns the encrypted value.",
         "operationId": "encryptString",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Login username (email)"
-          },
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "API key of the user for authentication"
-          },
-          {
-            "name": "projectCode",
-            "in": "path",
-            "required": true,
-            "description": "The project code.",
-            "schema": {
-              "type": "string",
-              "example": "proj123"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
