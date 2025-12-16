@@ -690,7 +690,7 @@
                     "notifications": {
                       "notifyOnStart": true,
                       "notifyOnCompletion": true,
-                      "notificationMode": "ON ERROR",
+                      "notificationMode": "ON_ERROR",
                       "notificationEmails": [
                         "demo1@acmeInc.com",
                         "demo2@acmeInc.com"
@@ -703,7 +703,7 @@
                     "autoRerun": {
                       "failurePercentageLimit": 10,
                       "maxRerunAttempts": 5,
-                      "delayBetweenRerun": 3,
+                      "delayBetweenReruns": 3,
                       "rerunOnNoImprovement": false
                     },
                     "setup": {
@@ -813,7 +813,7 @@
                     "notifications": {
                       "notifyOnStart": true,
                       "notifyOnCompletion": true,
-                      "notificationMode": "ON ERROR",
+                      "notificationMode": "ON_ERROR",
                       "notificationEmails": [
                         "demo1@acmeInc.com",
                         "demo2@acmeInc.com"
@@ -826,7 +826,7 @@
                     "autoRerun": {
                       "failurePercentageLimit": 10,
                       "maxRerunAttempts": 5,
-                      "delayBetweenRerun": 3,
+                      "delayBetweenReruns": 3,
                       "rerunOnNoImprovement": false
                     },
                     "setup": {
@@ -935,7 +935,7 @@
                     "notifications": {
                       "notifyOnStart": true,
                       "notifyOnCompletion": true,
-                      "notificationMode": "ON ERROR",
+                      "notificationMode": "ON_ERROR",
                       "notificationEmails": [
                         "demo1@acmeInc.com",
                         "demo2@acmeInc.com"
@@ -948,7 +948,7 @@
                     "autoRerun": {
                       "failurePercentageLimit": 10,
                       "maxRerunAttempts": 5,
-                      "delayBetweenRerun": 3,
+                      "delayBetweenReruns": 3,
                       "rerunOnNoImprovement": false
                     },
                     "setup": {
@@ -1060,7 +1060,7 @@
                     "notifications": {
                       "notifyOnStart": true,
                       "notifyOnCompletion": true,
-                      "notificationMode": "ON ERROR",
+                      "notificationMode": "ON_ERROR",
                       "notificationEmails": [
                         "demo1@acmeInc.com",
                         "demo2@acmeInc.com"
@@ -1073,7 +1073,7 @@
                     "autoRerun": {
                       "failurePercentageLimit": 10,
                       "maxRerunAttempts": 5,
-                      "delayBetweenRerun": 3,
+                      "delayBetweenReruns": 3,
                       "rerunOnNoImprovement": false
                     }
                   }
