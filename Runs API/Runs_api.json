@@ -315,7 +315,7 @@
                       "mobileAppTesting": {
                         "type": "object",
                         "properties": {
-                          "mobileExecutionDevices": {
+                          "mobileExecDevices": {
                             "type": "array",
                             "items": {
                               "type": "object",
@@ -801,7 +801,7 @@
                       },
                       "numOfParallelRuns": 2,
                       "mobileAppTesting": {
-                        "mobileExecutionDevices": [
+                        "mobileExecDevices": [
                           {
                             "refName": "device 1",
                             "deviceName": "Iphone 15",
@@ -1604,7 +1604,7 @@
                       "mobileAppTesting": {
                         "type": "object",
                         "properties": {
-                          "mobileExecutionDevices": {
+                          "mobileExecDevices": {
                             "type": "array",
                             "items": {
                               "type": "object",
@@ -2564,7 +2564,7 @@
                       "mobileAppTesting": {
                         "type": "object",
                         "properties": {
-                          "mobileExecutionDevices": {
+                          "mobileExecDevices": {
                             "type": "array",
                             "items": {
                               "type": "object",
