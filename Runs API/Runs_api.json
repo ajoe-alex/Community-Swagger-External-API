@@ -107,6 +107,11 @@
                     "example": "Staging",
                     "description": "Name of the environment where test execution to take place. Must reference to an existing app environment in the project."
                   },
+                  "appVariantOptionName": {
+                    "type": "string",
+                    "example": "Standard",
+                    "description": "Name of the app Variant Option. Must reference to an existing app variant option in the project."
+                  },
                   "screenshotMode": {
                     "type": "string",
                     "example": "OPTIMAL",
@@ -646,6 +651,7 @@
                     "scnPid": 15,
                     "purpose": "ACME INC ticket booking.",
                     "appEnvironmentName": "Staging",
+                    "appVariantOptionName": "Default",
                     "screenshotMode": "OPTIMAL",
                     "loggerLevel": "STANDARD",
                     "runProperties": {
@@ -771,6 +777,7 @@
                     "scnPid": 15,
                     "purpose": "ACME INC ticket booking.",
                     "appEnvironmentName": "Staging",
+                    "appVariantOptionName": "Default",
                     "screenshotMode": "OPTIMAL",
                     "loggerLevel": "STANDARD",
                     "runProperties": {
@@ -894,6 +901,7 @@
                     "scnPid": 15,
                     "purpose": "ACME INC ticket booking.",
                     "appEnvironmentName": "Staging",
+                    "appVariantOptionName": "Default",
                     "screenshotMode": "OPTIMAL",
                     "loggerLevel": "STANDARD",
                     "runProperties": {
@@ -1016,6 +1024,7 @@
                     "scnPid": 15,
                     "purpose": "ACME INC ticket booking.",
                     "appEnvironmentName": "Staging",
+                    "appVariantOptionName": "Default",
                     "screenshotMode": "OPTIMAL",
                     "loggerLevel": "STANDARD",
                     "runProperties": {
@@ -1386,6 +1395,11 @@
                     "type": "string",
                     "example": "Staging",
                     "description": "Name of the environment where test execution to take place. Must reference to an existing app environment in the project."
+                  },
+                  "appVariantOptionName": {
+                    "type": "string",
+                    "example": "Standard",
+                    "description": "Name of the app Variant Option. Must reference to an existing app variant option in the project."
                   },
                   "screenshotMode": {
                     "type": "string",
@@ -2341,6 +2355,11 @@
                     "type": "string",
                     "example": "Staging",
                     "description": "Name of the environment where test execution to take place. Must reference to an existing app environment in the project."
+                  },
+                  "appVariantOptionName": {
+                    "type": "string",
+                    "example": "Standard",
+                    "description": "Name of the app Variant Option. Must reference to an existing app variant option in the project."
                   },
                   "screenshotMode": {
                     "type": "string",
