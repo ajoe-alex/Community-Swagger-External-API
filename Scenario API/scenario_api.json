@@ -46,16 +46,9 @@
       "post": {
         "tags": ["Scenario"],
         "summary": "Fetch Scenario details",
-        "description": "Fetches comprehensive information about test Scenarios within your project. This endpoint supports:\n\n- **Pagination**: Control response size with configurable page numbers and sizes (max 25 items per page)\n- **Flexible Filtering**: Filter by specific Scenario IDs or requirement traceability keys\n- **Optional Detailed Information**: Selectively include Scenario metadata such as step details, requirement traceability in the response\n- **Version Control**: Choose between base version or user's checked-out version of Scenarios",
+        "description": "Fetches comprehensive information about test Scenarios within your project. This endpoint supports:\n\n- **Pagination**: Control response size with configurable page numbers and sizes (max 25 items per page)\n- **Flexible Filtering**: Filter by specific Scenario IDs or requirement traceability keys\n- **Optional Detailed Information**: Selectively include additional details such as custom fields, step details, requirement traceability in the response\n- **User-Specific Version View**: Results reflect the requesting user’s current version of the entities.",
         "operationId": "getScenarioStepDetails",
         "parameters": [
-          {
-            "name": "showMyView",
-            "in": "query",
-            "required": false,
-            "schema": { "type": "boolean", "default": false },
-            "description": "Controls scenario version selection:\n- false (default): Returns base version of Scenarios regardless of your checked out activity\n- true: Returns user's checked-out version if available, otherwise falls back to base version"
-          },
           {
             "name": "scenarioType",
             "in": "path",
@@ -104,7 +97,7 @@
                       }
                     }
                   },
-                  "fetchDetails": {
+                  "additionalDetails": {
                     "type": "object",
                     "properties": {
                       "steps": {
@@ -115,9 +108,9 @@
                         "type": "boolean",
                         "description": "Flag to include the Scenario requirement traceability details in the response."
                       },
-                      "metadata": {
+                      "customFields": {
                         "type": "boolean",
-                        "description": "Flag to include Scenario metadata. Defaults to false, if not specified."
+                        "description": "Flag to include Scenario custom fields. Defaults to false, if not specified."
                       }
                     }
                   }
@@ -158,66 +151,56 @@
                             "example": "Scenario to test Ticket Booking functionality",
                             "description": "Description of the Scenario"
                           },
-                          "isCheckedOutVersion": {
-                            "type": "boolean",
-                            "example": true,
-                            "description": "Indicates whether the returned entity is the base version or the checked-out version."
+                          "testCasesCount": {
+                            "type": "integer",
+                            "example": 15,
+                            "description": "Total number of test cases associated with the Scenario."
                           },
-                          "metadata": {
+                          "traceabilityCount": {
+                            "type": "integer",
+                            "example": 7,
+                            "description": "Number of requirements associated to the Scenario."
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "New",
+                            "description": "Current status of the Scenario, such as New, In Progress, or Completed."
+                          },
+                          "createdBy": {
+                            "type": "string",
+                            "example": "Tenant Admin",
+                            "description": "Name of the user who created the Scenario."
+                          },
+                          "createdTimestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-10-08T09:24:22Z",
+                            "description": "UTC Timestamp when the Scenario was created, in ISO 8601 format."
+                          },
+                          "lastModifiedBy": {
+                            "type": "string",
+                            "example": "Verni Cooper",
+                            "description": "Name of the user who last modified the Scenario."
+                          },
+                          "lastModifiedTimestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-10-19T17:59:05Z",
+                            "description": "UTC Timestamp of the last modification made to the Scenario, in ISO 8601 format."
+                          },
+                          "customFields": {
                             "type": "object",
-                            "properties": {
-                              "testCasesCount": {
-                                "type": "integer",
-                                "example": 15,
-                                "description": "Total number of test cases associated with the Scenario."
-                              },
-                              "traceabilityCount": {
-                                "type": "integer",
-                                "example": 7,
-                                "description": "Number of requirements associated to the Scenario."
-                              },
-                              "status": {
-                                "type": "string",
-                                "example": "New",
-                                "description": "Current status of the Scenario, such as New, In Progress, or Completed."
-                              },
-                              "createdBy": {
-                                "type": "string",
-                                "example": "Tenant Admin",
-                                "description": "Name of the user who created the Scenario."
-                              },
-                              "createdTimestamp": {
-                                "type": "string",
-                                "format": "date-time",
-                                "example": "2025-10-08T09:24:22Z",
-                                "description": "UTC Timestamp when the Scenario was created, in ISO 8601 format."
-                              },
-                              "lastModifiedBy": {
-                                "type": "string",
-                                "example": "Verni Cooper",
-                                "description": "Name of the user who last modified the Scenario."
-                              },
-                              "lastModifiedTimestamp": {
-                                "type": "string",
-                                "format": "date-time",
-                                "example": "2025-10-19T17:59:05Z",
-                                "description": "UTC Timestamp of the last modification made to the Scenario, in ISO 8601 format."
-                              },
-                              "customFields": {
-                                "type": "object",
-                                "example": {
-                                  "Priority": "Low",
-                                  "New List": "true"
-                                },
-                                "description": "Custom fields associated with the Scenario, represented as key-value pairs."
-                              },
-                              "tags": {
-                                "type": "array",
-                                "items": { "type": "string" },
-                                "example": ["To be Reviewed", "Smoke"],
-                                "description": "List of tags associated with the Scenario."
-                              }
-                            }
+                            "example": {
+                              "Priority": "Low",
+                              "New List": "true"
+                            },
+                            "description": "Custom fields associated with the Scenario, represented as key-value pairs."
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "example": ["To be Reviewed", "Smoke"],
+                            "description": "List of tags associated with the Scenario."
                           },
                           "stepDetails": {
                             "type": "array",
@@ -257,7 +240,7 @@
                   }
                 },
                 "examples": {
-                  "summary": {
+                  "customFields": {
                     "value": {
                       "page": 1,
                       "pageSize": 10,
@@ -268,61 +251,52 @@
                           "id": 1,
                           "name": "Ticket Booking",
                           "description": "Scenario to test Ticket Booking functionality",
-                          "isCheckedOutVersion": true,
-                          "metadata": {
-                            "testCasesCount": 15,
-                            "traceabilityCount": 7,
-                            "status": "New",
-                            "createdBy": "Tenant Admin",
-                            "createdTimestamp": "2025-10-08T09:24:22Z",
-                            "lastModifiedBy": "Verni Cooper",
-                            "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
-                            "customFields": {
-                              "Priority": "Low",
-                              "New List": "true"
-                            },
-                            "tags": ["To be Reviewed", "Smoke"]
-                          }
+                          "testCasesCount": 15,
+                          "traceabilityCount": 7,
+                          "status": "New",
+                          "createdBy": "Tenant Admin",
+                          "createdTimestamp": "2025-10-08T09:24:22Z",
+                          "lastModifiedBy": "Verni Cooper",
+                          "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
+                          "customFields": {
+                            "Priority": "Low",
+                            "New List": "true"
+                          },
+                          "tags": ["To be Reviewed", "Smoke"]
                         },
                         {
                           "id": 3,
                           "name": "User Registration",
                           "description": "Scenario to test new user registration flow",
-                          "isCheckedOutVersion": false,
-                          "metadata": {
-                            "testCasesCount": 8,
-                            "traceabilityCount": 1,
-                            "status": "Completed",
-                            "createdBy": "John Citadel",
-                            "createdTimestamp": "2025-10-08T09:24:22Z",
-                            "lastModifiedBy": "Tenant Admin",
-                            "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
-                            "customFields": {
-                              "Priority": "High",
-                              "New List": "true"
-                            },
-                            "tags": ["Regression", "Critical"]
-                          }
+                          "testCasesCount": 8,
+                          "traceabilityCount": 1,
+                          "status": "Completed",
+                          "createdBy": "John Citadel",
+                          "createdTimestamp": "2025-10-08T09:24:22Z",
+                          "lastModifiedBy": "Tenant Admin",
+                          "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
+                          "customFields": {
+                            "Priority": "High",
+                            "New List": "true"
+                          },
+                          "tags": ["Regression", "Critical"]
                         },
                         {
                           "id": 8,
                           "name": "Logout",
                           "description": "Scenario to test user logout",
-                          "isCheckedOutVersion": true,
-                          "metadata": {
-                            "testCasesCount": 15,
-                            "traceabilityCount": 7,
-                            "status": "New",
-                            "createdBy": "Tenant Admin",
-                            "createdTimestamp": "2025-10-08T09:24:22Z",
-                            "lastModifiedBy": "Tenant Admin",
-                            "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
-                            "customFields": {
-                              "Priority": "Low",
-                              "New List": "true"
-                            },
-                            "tags": ["Smoke"]
-                          }
+                          "testCasesCount": 15,
+                          "traceabilityCount": 7,
+                          "status": "New",
+                          "createdBy": "Tenant Admin",
+                          "createdTimestamp": "2025-10-08T09:24:22Z",
+                          "lastModifiedBy": "Tenant Admin",
+                          "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
+                          "customFields": {
+                            "Priority": "Low",
+                            "New List": "true"
+                          },
+                          "tags": ["Smoke"]
                         }
                       ]
                     }
@@ -332,13 +306,20 @@
                       "page": 1,
                       "pageSize": 10,
                       "totalPages": 1,
-                      "totalCount": 3,
+                      "totalCount": 1,
                       "results": [
                         {
                           "id": 1,
                           "name": "Ticket Booking",
                           "description": "Scenario to test Ticket Booking functionality",
-                          "isCheckedOutVersion": true,
+                          "testCasesCount": 15,
+                          "traceabilityCount": 7,
+                          "status": "New",
+                          "createdBy": "Tenant Admin",
+                          "createdTimestamp": "2025-10-08T09:24:22Z",
+                          "lastModifiedBy": "Verni Cooper",
+                          "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
+                          "tags": ["To be Reviewed", "Smoke"],
                           "stepDetails": [
                             {
                               "stepIndex": 1,
@@ -351,40 +332,6 @@
                               "actionName": "Login to Booking System",
                               "actionDescription": "Action to login into the booking system",
                               "contextName": "Login Page"
-                            }
-                          ]
-                        },
-                        {
-                          "id": 3,
-                          "name": "User Registration",
-                          "description": "Scenario to test new user registration flow",
-                          "isCheckedOutVersion": false,
-                          "stepDetails": [
-                            {
-                              "stepIndex": 1,
-                              "actionName": "Open Registration Page",
-                              "actionDescription": "Opens the registration page.",
-                              "contextName": "Registration Page"
-                            },
-                            {
-                              "stepIndex": 2,
-                              "actionName": "Fill User Details",
-                              "actionDescription": "Fills the registration form.",
-                              "contextName": "Registration Form"
-                            }
-                          ]
-                        },
-                        {
-                          "id": 8,
-                          "name": "Logout",
-                          "description": "Scenario to test user logout",
-                          "isCheckedOutVersion": true,
-                          "stepDetails": [
-                            {
-                              "stepIndex": 1,
-                              "actionName": "Click Logout",
-                              "actionDescription": "Clicks the logout button.",
-                              "contextName": "Header"
                             }
                           ]
                         }
@@ -402,21 +349,27 @@
                           "id": 1,
                           "name": "Ticket Booking",
                           "description": "Scenario to test Ticket Booking functionality",
-                          "isCheckedOutVersion": true,
+                          "testCasesCount": 15,
+                          "traceabilityCount": 7,
+                          "status": "New",
+                          "createdBy": "Tenant Admin",
+                          "createdTimestamp": "2025-10-08T09:24:22Z",
+                          "lastModifiedBy": "Verni Cooper",
+                          "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
+                          "tags": ["To be Reviewed", "Smoke"],
                           "requirementTraceability": ["TP-22", "TP-49"]
                         },
                         {
                           "id": 3,
                           "name": "User Registration",
                           "description": "Scenario to test new user registration flow",
-                          "isCheckedOutVersion": false,
-                          "requirementTraceability": []
-                        },
-                        {
-                          "id": 8,
-                          "name": "Logout",
-                          "description": "Scenario to test user logout",
-                          "isCheckedOutVersion": true,
+                          "testCasesCount": 15,
+                          "traceabilityCount": 7,
+                          "status": "New",
+                          "createdBy": "Tenant Admin",
+                          "createdTimestamp": "2025-10-08T09:24:22Z",
+                          "lastModifiedBy": "Verni Cooper",
+                          "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
                           "requirementTraceability": []
                         }
                       ]
