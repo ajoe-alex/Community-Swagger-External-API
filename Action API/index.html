@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swagger UI</title>
+    <!-- Include Swagger UI CSS from CDN -->
+</head>
+
+<body>
+    <div id="swagger-ui"></div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css"
+        crossorigin="anonymous">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js"
+        crossorigin="anonymous"></script>
+
+    <script>
+        AQ__INTERVAL_TIMEOUT = 300;
+
+        function waitForFunction(functionName) {
+            return new Promise((resolve, reject) => {
+                const checkExist = setInterval(() => {
+                    if (typeof window[functionName] === "function") {
+                        clearInterval(checkExist);
+                        resolve(window[functionName]); // Resolve with the function itself if needed
+                    }
+                }, AQ__INTERVAL_TIMEOUT);
+
+                // Optional timeout after which the promise is rejected
+                setTimeout(() => {
+                    clearInterval(checkExist);
+                    reject(new Error(`Function ${functionName} not found within the expected time.`));
+                }, 5000); // Timeout after 5 seconds (adjust as necessary)
+            });
+        }
+        waitForFunction("SwaggerUIBundle").then(SwaggerUIBundle => {
+            SwaggerUIBundle({
+                url: "https://raw.githubusercontent.com/ajoe-alex/Comminuty-External-API/refs/heads/main/Action%20API/action_api.json",
+                dom_id: '#swagger-ui',
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                layout: "BaseLayout"  // Clean layout for embedding
+            });
+
+            function waitForElement(selector, root) {
+                root = root || document;
+                return new Promise((resolve) => {
+                    const checkExist = setInterval(() => {
+                        const elements = Array.from(root.querySelectorAll(selector));
+                        if (elements && elements.length > 0) {
+                            clearInterval(checkExist);
+                            // Stop checking once the element is found
+                            resolve(elements);
+                            // Resolve promise with the found element
+                        }
+                    }
+                        , 100);
+                    // Check every 100ms
+                });
+            }
+
+            waitForElement('#swagger-ui').then((elems_) => {
+                swagger_ui_ = elems_[0];
+                waitForElement('.title', swagger_ui_).then((elems_) => {
+                    const allWrapper = [...swagger_ui_.querySelectorAll('.wrapper')];
+                    allWrapper.forEach(elem => {
+                        elem.classList.remove('wrapper');
+                        // Remove 'wrapper' class
+                    });
+                    console.log('Wrapper class removed from all elements within #swagger-ui');
+                })
+
+                waitForElement('a:has(.url)', swagger_ui_).then((elems_) => {
+                    elems_.forEach(elem_ => {
+                        elem_.remove()
+                    })
+                })
+
+                waitForElement('small', swagger_ui_).then((elems_) => {
+                    elems_.forEach(version => {
+                        version.remove()
+                    })
+                })
+
+                waitForElement('.info', swagger_ui_).then((elems_) => {
+                    elems_.forEach(elem => {
+                        elem.style.margin='5px';
+                        elem.style.padding='5px';
+                    })
+                })
+
+                waitForElement('.scheme-container', swagger_ui_).then((elems_) => {
+                    elems_.forEach(elem => {
+                        elem.style.margin='5px';
+                        elem.style.padding='5px';
+                    })
+                })
+
+                waitForElement('.servers-title', swagger_ui_).then((elems_) => {
+                    elems_.forEach(elem => {
+                        elem.style.display='none';
+                    })
+                })
+
+                waitForElement('label[for="servers"]:has(select)', swagger_ui_).then((elems_) => {
+                    elems_.forEach(elem => {
+                        elem.style.display='none';
+                    })
+                })
+                
+                waitForElement('.computed-url', swagger_ui_).then((elems_) => {
+                    elems_.forEach(elem => {
+                        elem.style.display='none';
+                    })
+                })
+
+                window.setInterval(() => {
+                    let allExecuteButtons = Array.from(swagger_ui_.querySelectorAll('button.btn.execute.opblock-control__btn'))
+                    let filteredExecuteButtons = allExecuteButtons.filter(executeButton => !executeButton.classList.contains('aq__tag'))
+                    filteredExecuteButtons.forEach(executeButton => {
+                        executeButton.classList.add('aq__tag')
+                        executeButton.innerText = 'Get Curl'
+                    })
+                }, AQ__INTERVAL_TIMEOUT)
+
+                window.setInterval(() => {
+                    let allRequestURLs = Array.from(swagger_ui_.querySelectorAll('.request-url'))
+                    allRequestURLs.forEach(requestUrl => {
+                        requestUrl.remove()
+                    })
+                }, AQ__INTERVAL_TIMEOUT)
+
+                window.setInterval(() => {
+                    let allRequestBodies = Array.from(swagger_ui_.querySelectorAll('.responses-table.live-responses-table'))
+                    allRequestBodies.forEach(requestBody => {
+                        requestBody.remove()
+                    })
+                }, AQ__INTERVAL_TIMEOUT)
+
+                window.setInterval(() => {
+                    let elems = Array.from(swagger_ui_.querySelectorAll('h4'))
+                    elems.forEach(elem => {
+                        elem.remove()
+                    })
+                }, AQ__INTERVAL_TIMEOUT)
+            });
+
+        })
+    </script>
+</body>
+
+</html>
