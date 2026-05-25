@@ -46,7 +46,7 @@
       "post": {
         "tags": ["Scenario"],
         "summary": "Fetch Scenario details",
-        "description": "Fetches comprehensive information about test Scenarios within your project. This endpoint supports:\n\n- **Pagination**: Control response size with configurable page numbers and sizes (max 25 items per page)\n- **Flexible Filtering**: Filter by specific Scenario IDs or requirement traceability keys\n- **Optional Detailed Information**: Selectively include additional details such as custom fields, step details, requirement traceability in the response\n- **User-Specific Version View**: Results reflect the requesting user’s current version of the entities.",
+        "description": "Fetches comprehensive information about test Scenarios within your project. This endpoint supports:\n\n- **Pagination**: Control response size with configurable page numbers and sizes (max 25 items per page)\n- **Flexible Filtering**: Filter by specific Scenario IDs or requirement traceability keys\n- **Optional Detailed Information**: Selectively include additional details such as custom fields, step details, requirement traceability, and scenario traceability in the response\n- **User-Specific Version View**: Results reflect the requesting user's current version of the entities.",
         "operationId": "getScenarioStepDetails",
         "parameters": [
           {
@@ -111,6 +111,10 @@
                       "customFields": {
                         "type": "boolean",
                         "description": "Flag to include Scenario custom fields. Defaults to false, if not specified."
+                      },
+                      "scenarioTraceability": {
+                        "type": "boolean",
+                        "description": "Flag to include Scenario traceability linkage with other scenarios in the response. Defaults to false, if not specified."
                       }
                     }
                   }
@@ -233,6 +237,30 @@
                             "description": "List of Requirement traceability keys associated to the Scenario",
                             "items": { "type": "string" },
                             "example": ["TP-22", "TP-49"]
+                          },
+                          "scenarioTraceability": {
+                            "type": "array",
+                            "description": "List of Scenarios linked to this Scenario through traceability",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "integer",
+                                  "description": "ID of the linked Scenario",
+                                  "example": 12
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "Name of the linked Scenario",
+                                  "example": "Manual Scenario"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "description": "Current status of the linked Scenario",
+                                  "example": "New"
+                                }
+                              }
+                            }
                           }
                         }
                       }
@@ -374,6 +402,54 @@
                         }
                       ]
                     }
+                  },
+                  "scenarioTraceability": {
+                    "value": {
+                      "page": 1,
+                      "pageSize": 10,
+                      "totalPages": 1,
+                      "totalCount": 2,
+                      "results": [
+                        {
+                          "id": 1,
+                          "name": "Ticket Booking",
+                          "description": "Scenario to test Ticket Booking functionality",
+                          "testCasesCount": 15,
+                          "traceabilityCount": 7,
+                          "status": "New",
+                          "createdBy": "Tenant Admin",
+                          "createdTimestamp": "2025-10-08T09:24:22Z",
+                          "lastModifiedBy": "Verni Cooper",
+                          "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
+                          "tags": ["To be Reviewed", "Smoke"],
+                          "scenarioTraceability": [
+                            {
+                              "id": 12,
+                              "name": "Manual Scenario",
+                              "status": "New"
+                            },
+                            {
+                              "id": 15,
+                              "name": "Payment Processing",
+                              "status": "In Progress"
+                            }
+                          ]
+                        },
+                        {
+                          "id": 3,
+                          "name": "User Registration",
+                          "description": "Scenario to test new user registration flow",
+                          "testCasesCount": 8,
+                          "traceabilityCount": 1,
+                          "status": "Completed",
+                          "createdBy": "John Citadel",
+                          "createdTimestamp": "2025-10-08T09:24:22Z",
+                          "lastModifiedBy": "Tenant Admin",
+                          "lastModifiedTimestamp": "2025-10-19T17:59:05Z",
+                          "scenarioTraceability": []
+                        }
+                      ]
+                    }
                   }
                 }
               }
@@ -441,8 +517,8 @@
     "/scn/scenarios/{scenarioType}/bulk-update": {
       "patch": {
         "tags": ["Scenario"],
-        "summary": "Bulk update Scenario Requirement Traceability",
-        "description": "Updates requirement traceability for multiple Scenarios.",
+        "summary": "Bulk update Scenario Requirement Traceability and Status",
+        "description": "Updates requirement traceability and status for multiple Scenarios.",
         "operationId": "updateScenarios",
         "parameters": [
           {
@@ -474,6 +550,11 @@
                       "description": "List of Scenario IDs to integrate with requirements",
                       "example": [1, 2, 3, 4, 5, 10]
                     },
+                    "status": {
+                      "type": "string",
+                      "description": "Status to update for the selected Scenarios. Example values include 'New', 'In Progress', 'Completed', etc.",
+                      "example": "Completed"
+                    },
                     "requirementTraceability": {
                       "type": "object",
                       "description": "Contains details for updating requirement traceability of Scenario entities.",
@@ -501,6 +582,7 @@
                 "example": [
                   {
                     "scenarioIds": [1, 2],
+                    "status": "In Progress",
                     "requirementTraceability": {
                       "requirementKeys": ["TP-11", "TP-31"],
                       "updateType": "APPEND",
@@ -509,6 +591,7 @@
                   },
                   {
                     "scenarioIds": [98, 102],
+                    "status": "Completed",
                     "requirementTraceability": {
                       "requirementKeys": ["TP-51", "TP-319", "TP-987"],
                       "updateType": "OVERRIDE",
