@@ -3,7 +3,7 @@
   "info": {
     "title": "Tenant Admin API",
     "version": "1.0.0",
-    "description": "APIs for managing tenant-level administration, including project creation, updates, cloning, and configuration. Access is restricted to users with Tenant Admin privileges."
+    "description": "APIs for tenant-level administration, including project management, requirement traceability configuration, and audit log retrieval. Access to these endpoints is restricted to users with Tenant Admin privileges."
   },
   "servers": [
     {
@@ -46,7 +46,7 @@
     "/administration/projects": {
       "get": {
         "tags": ["Projects"],
-        "summary": "List projects",
+        "summary": "List Projects",
         "description": "Returns a paginated list of all projects available within the tenant.",
         "operationId": "getProjects",
         "parameters": [
@@ -139,11 +139,11 @@
                           },
                           "branchPath": {
                             "type": "array",
-                            "description": "Parent Heirarchy of projects",
+                            "description": "Parent Hierarchy of projects",
                             "items": {
                               "type": "string"
                             },
-                            "example": "[\"Root Project\",\"Root Project Child\"]"
+                            "example": ["Root Project", "Root Project Child"]
                           },
                           "lastMergeInfo": {
                             "type": "object",
@@ -207,11 +207,7 @@
                           "description": "Description",
                           "createdUserPid": 1,
                           "createdTimestamp": 1728040036528,
-                          "branchPath": [
-                            "New Project",
-                            "Acme Project",
-                            "Test Project"
-                          ],
+                          "branchPath": ["New Project", "Acme Project", "Test Project"],
                           "lastMergeInfo": {
                             "userPid": 1,
                             "mergeTimeStamp": 1751012484566,
@@ -263,8 +259,8 @@
       },
       "post": {
         "tags": ["Projects"],
-        "summary": "Create project",
-        "description": "Create a new project in the Tenant. Project name must adhere to the following criteria: <br/>   &nbsp; &nbsp; 1.Must always start with a alphabetic character<br/>   &nbsp; &nbsp; 2.Maximum length of 256 characters <br/>   &nbsp; &nbsp; 3.Only letters, digits, spaces, and underscores  allowed",
+        "summary": "Create Project",
+        "description": "Create a new project in the Tenant. Project name must adhere to the following criteria:\n1. Must always start with an alphabetic character\n2. Maximum length of 256 characters\n3. Only letters, digits, spaces, and underscores allowed",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -300,7 +296,7 @@
                       "properties": {
                         "userEmail": {
                           "type": "string",
-                          "description": "Login Email of the user. Must  be an existing user in the system.",
+                          "description": "Login Email of the user. Must be an existing user in the system.",
                           "example": "user@example.com"
                         },
                         "role": {
@@ -475,7 +471,7 @@
     "/administration/projects/{pjPid}/clone": {
       "post": {
         "tags": ["Projects"],
-        "summary": "Clone project",
+        "summary": "Clone Project",
         "description": "Creates a new project by cloning configuration from an existing project.",
         "operationId": "cloneProject",
         "parameters": [
@@ -496,7 +492,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required":["projectName"],
+                "required": ["projectName"],
                 "properties": {
                   "projectName": {
                     "type": "string",
@@ -611,7 +607,7 @@
     "/administration/projects/{pjPid}": {
       "put": {
         "tags": ["Projects"],
-        "summary": "Update project",
+        "summary": "Update Project",
         "description": "Updates the name and description of an existing project identified by its Pid.",
         "operationId": "updateProject",
         "parameters": [
@@ -690,7 +686,7 @@
       "patch": {
         "tags": ["Requirement Traceability Configuration"],
         "summary": "Configure requirement traceability",
-        "description": "This API configures Requirements Traceability Integration within the Project Configuration for a specified list of projects. It must be executed by a Tenant Admin to ensure access to all listed projects. \n\n **Note:** Any existing Requirements Traceability configuration will be overwritten. However, currently mapped tickets/stories from these integrations will be retained.",
+        "description": "This API configures Requirements Traceability Integration within the Project Configuration for a specified list of projects. It must be executed by a Tenant Admin to ensure access to all listed projects.\n\n**Note:** Any existing Requirements Traceability configuration will be overwritten. However, currently mapped tickets/stories from these integrations will be retained.",
         "operationId": "bulkExtIntegration",
         "parameters": [],
         "requestBody": {
@@ -707,15 +703,11 @@
                     "items": {
                       "type": "string"
                     },
-                    "example": [
-                      "Release Project",
-                      "Sanity Project",
-                      "Staging Project"
-                    ]
+                    "example": ["Release Project", "Sanity Project", "Staging Project"]
                   },
                   "updateExisting": {
                     "type": "boolean",
-                    "example": "true"
+                    "example": true
                   },
                   "Atlassian JIRA": {
                     "type": "object",
@@ -728,7 +720,7 @@
                       },
                       "platformURL": {
                         "type": "string",
-                        "description": "URL of the Itegration Platform",
+                        "description": "URL of the Integration Platform",
                         "example": "https://accelq.jira.com"
                       },
                       "username": {
@@ -744,7 +736,7 @@
                       "connectionMode": {
                         "type": "string",
                         "enum": ["BROWSER", "SERVER"],
-                        "description": "Communication with your Jira instance can be routed either from the user’s browser or from ACCELQ server. If your Jira server is blocked from outside access, choose the BROWSER option.",
+                        "description": "Communication with your Jira instance can be routed either from the user's browser or from ACCELQ server. If your Jira server is blocked from outside access, choose the BROWSER option.",
                         "example": "BROWSER"
                       }
                     }
@@ -754,12 +746,8 @@
               "examples": {
                 "Atlassian JIRA": {
                   "value": {
-                    "projectNames": [
-                      "Release Project",
-                      "Sanity Project",
-                      "Staging Project"
-                    ],
-                    "updateExisting": "true",
+                    "projectNames": ["Release Project", "Sanity Project", "Staging Project"],
+                    "updateExisting": true,
                     "traceabilityConfig": {
                       "platform": "Atlassian JIRA",
                       "platformURL": "https://AQ.jira.com",
@@ -771,12 +759,8 @@
                 },
                 "Azure Dev Ops": {
                   "value": {
-                    "projectNames": [
-                      "Release Project",
-                      "Sanity Project",
-                      "Staging Project"
-                    ],
-                    "updateExisting": "false",
+                    "projectNames": ["Release Project", "Sanity Project", "Staging Project"],
+                    "updateExisting": false,
                     "traceabilityConfig": {
                       "platform": "Azure Dev Ops",
                       "platformURL": "https://dev.azure.com/QA-Sanity",
@@ -788,12 +772,8 @@
                 },
                 "Rally Cloud": {
                   "value": {
-                    "projectNames": [
-                      "Release Project",
-                      "Sanity Project",
-                      "Staging Project"
-                    ],
-                    "updateExisting": "true",
+                    "projectNames": ["Release Project", "Sanity Project", "Staging Project"],
+                    "updateExisting": true,
                     "traceabilityConfig": {
                       "platform": "Rally Cloud",
                       "platformURL": "https://AQ.rally.com",
@@ -805,12 +785,8 @@
                 },
                 "Spira": {
                   "value": {
-                    "projectNames": [
-                      "Release Project",
-                      "Sanity Project",
-                      "Staging Project"
-                    ],
-                    "updateExisting": "true",
+                    "projectNames": ["Release Project", "Sanity Project", "Staging Project"],
+                    "updateExisting": true,
                     "traceabilityConfig": {
                       "platform": "Spira",
                       "platformURL": "https://AQ.Spira.com",
@@ -822,11 +798,7 @@
                 },
                 "ClickUp": {
                   "value": {
-                    "projectNames": [
-                      "Release Project",
-                      "Sanity Project",
-                      "Staging Project"
-                    ],
+                    "projectNames": ["Release Project", "Sanity Project", "Staging Project"],
                     "traceabilityConfig": {
                       "platform": "Click Up",
                       "platformURL": "https://AQ.Spira.com",
@@ -874,22 +846,6 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized - Invalid authentication credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "Invalid user credentials or API key"
-                    }
-                  }
-                }
-              }
-            }
-          },
           "400": {
             "description": "Bad Request - Validation errors",
             "content": {
@@ -906,80 +862,70 @@
                 "examples": {
                   "nullRequestBody": {
                     "summary": "Null request body",
-                    "value": {
-                      "error": "Request Body is mandatory."
-                    }
+                    "value": { "error": "Request Body is mandatory." }
                   },
                   "missingProjectNames": {
                     "summary": "Project names missing",
-                    "value": {
-                      "error": "projectNames cannot be null or empty."
-                    }
+                    "value": { "error": "projectNames cannot be null or empty." }
                   },
                   "nullTraceabilityConfig": {
                     "summary": "Missing traceabilityConfig",
-                    "value": {
-                      "error": "traceabilityConfig cannot be null."
-                    }
+                    "value": { "error": "traceabilityConfig cannot be null." }
                   },
                   "missingPlatform": {
                     "summary": "Missing platform",
-                    "value": {
-                      "error": "platform cannot be null."
-                    }
+                    "value": { "error": "platform cannot be null." }
                   },
                   "invalidPlatform": {
                     "summary": "Unsupported platform",
-                    "value": {
-                      "error": "Accepted platforms are : [Atlassian Jira, Azure Dev Ops, Rally Cloud, Spira, Click Up]."
-                    }
+                    "value": { "error": "Accepted platforms are : [Atlassian Jira, Azure Dev Ops, Rally Cloud, Spira, Click Up]." }
                   },
                   "missingPlatformURL": {
                     "summary": "Missing Platform URL",
-                    "value": {
-                      "error": "Platform URL cannot be null or empty."
-                    }
+                    "value": { "error": "Platform URL cannot be null or empty." }
                   },
                   "missingUserName": {
                     "summary": "Missing userName",
-                    "value": {
-                      "error": "userName of integration platform cannot be null or empty."
-                    }
+                    "value": { "error": "userName of integration platform cannot be null or empty." }
                   },
                   "missingPasswordOrApiToken": {
                     "summary": "Missing credentials",
-                    "value": {
-                      "error": "Password or API Token of Integration platform is required."
-                    }
+                    "value": { "error": "Password or API Token of Integration platform is required." }
                   },
                   "missingSubscriptionObjectId": {
                     "summary": "Missing Rally subscriptionObjectId",
-                    "value": {
-                      "error": "subscriptionObjectId cannot be null or empty."
-                    }
+                    "value": { "error": "subscriptionObjectId cannot be null or empty." }
                   },
                   "missingClickUpWorkspaceId": {
                     "summary": "Missing ClickUp workspaceId",
-                    "value": {
-                      "error": "Workspace Id of Integration platform is required."
-                    }
+                    "value": { "error": "Workspace Id of Integration platform is required." }
                   },
                   "missingClickUpApiToken": {
                     "summary": "Missing ClickUp API Token",
-                    "value": {
-                      "error": "API Key/Token of Integration platform is required."
-                    }
+                    "value": { "error": "API Key/Token of Integration platform is required." }
                   },
                   "missingSpiraPassword": {
                     "summary": "Missing Spira password",
-                    "value": {
-                      "error": "Password of Integration platform is required."
-                    }
+                    "value": { "error": "Password of Integration platform is required." }
                   },
                   "missingConnectionMode": {
                     "summary": "Missing connectionMode",
-                    "value": {
-                      "error": "connectionMode cannot be null or empty."
+                    "value": { "error": "connectionMode cannot be null or empty." }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid authentication credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid user credentials or API key"
                     }
                   }
                 }
@@ -1017,6 +963,311 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/administration/audit-logs": {
+      "post": {
+        "tags": ["Audit Logs"],
+        "summary": "Fetch audit logs",
+        "description": "Fetches tenant-level audit log entries using a stateless cursor-based approach. Designed for clients that need to continuously stream or replay audit activity without missing or duplicating records.\n\n## Call patterns\n\n### Initial call (no `cursor`)\n\nOmit the `cursor` field and supply optional filters. The server freezes those filters into an opaque cursor token returned as `nextCursor`.\n\n- **Open-tail stream** (`createdAfter` only, no `createdBefore`): each subsequent poll advances the upper bound forward in real time, delivering new events as they are committed. The window from `createdAfter` to `now` must not exceed 90 days at the time of the initial call.\n- **Fixed window** (`createdAfter` + `createdBefore`): the cursor exhausts once all matching rows in the range have been delivered (`hasMore: false`).\n- **Start from now** (neither date supplied): stream begins at the current time, delivering only events that occur going forward.\n\n### Subsequent calls (with `cursor`)\n\nPass only the `cursor` field from the previous response's `nextCursor`. Do not include any filters or dates — they are already frozen inside the cursor. To change filters, start a new stream by making a fresh initial call without a cursor.\n\n## Polling\n\n- `hasMore: true` — a full page was returned; call again immediately with `nextCursor` to retrieve the next page.\n- `hasMore: false` — the stream is caught up; wait before polling again, then retry with `nextCursor`.\n- **Always preserve `nextCursor`**, even when `data` is empty. Discarding it loses your position in the stream.\n\n## Date rules\n\n- Accepted format: ISO 8601 with explicit UTC offset, e.g. `2026-06-01T00:00:00Z`.\n- `createdAfter` cannot be in the future.\n- `createdAfter` cannot be older than 1 year (the audit log retention window).\n- `createdBefore` requires `createdAfter`. If `createdBefore` is in the future it is silently clamped to `now`.\n- `createdBefore` must be after `createdAfter` (after clamping).\n- The window between `createdAfter` and `createdBefore` (or `now` for open tails) must not exceed 90 days.\n\n## Ordering and safe upper bound\n\nResults are returned in ascending order by event ID (i.e. chronological order). A 5-second lag is applied to the upper time bound so that in-flight transactions have time to commit before the cursor reaches them, preventing gaps in the stream.",
+        "operationId": "fetchAuditLogs",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cursor": {
+                    "type": "string",
+                    "description": "Opaque pagination token returned as `nextCursor` from a previous response. When present, all other fields (`actorEmails`, `events`, `createdAfter`, `createdBefore`, `limit`) must be omitted — the cursor already encodes the frozen filters and position. To change filters, start a new stream without a cursor.",
+                    "example": "eyJ2IjoxLCJsYXN0SWQiOjQyLCJmcm9tRXBvY2hNcyI6MTc0ODczOTIwMDAwMCwidG9FcG9jaE1zIjpudWxsfQ=="
+                  },
+                  "actorEmails": {
+                    "type": "array",
+                    "description": "Filter to audit logs generated by these user email addresses. Case-insensitive. Ignored on subsequent calls (use `cursor` instead).",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    },
+                    "example": ["admin@example.com", "qa.lead@example.com"]
+                  },
+                  "events": {
+                    "type": "array",
+                    "description": "Filter to specific event types. Values must match a valid event title exactly (case-insensitive). Ignored on subsequent calls (use `cursor` instead).\n\nValid values: `Admin Login`, `Failed Login Attempt`, `Create User`, `Delete User`, `Admin Privilege Granted`, `Admin Privilege Revoked`, `Update Authentication Method`, `Create Project`, `Update Project`, `Delete Project`, `Clone Project`, `Create Branch Project`, `Create Role`, `Update Role`, `Delete Role`, `Update Password Policy`, `Update SSO Details`, `Update User Session Timeout`, `Update Email Service`, `Update Activation Dates`, `Update Password`, `Password Reset`, `Update User License`, `Updated User Project Role`, `Terminate User Session`, `Deactivate User`, `Enable Live Chat For User`, `Disable Live Chat For User`, `Expire All User Passwords`, `Download Project Source`, `Update External Result Link Otp Pref`, `Merged Projects`, `Purge Results`, `Disable User Session Timeout`, `Rename Role`, `Enable IP Whitelisting`, `Disable IP Whitelisting`, `Update IP Whitelisting`, `User Login`, `API Key Invalid`.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": ["Create User", "Delete User"]
+                  },
+                  "createdAfter": {
+                    "type": "string",
+                    "description": "Start of the date range (inclusive). ISO 8601 with UTC offset required (e.g. `2026-06-01T00:00:00Z`). Defaults to the current time if omitted. Cannot be in the future or older than 1 year. Ignored on subsequent calls (use `cursor` instead).",
+                    "example": "2026-01-01T00:00:00Z"
+                  },
+                  "createdBefore": {
+                    "type": "string",
+                    "description": "End of the date range (exclusive). ISO 8601 with UTC offset required (e.g. `2026-06-30T23:59:59Z`). Requires `createdAfter`. Clamped to `now` if set in the future. Must be after `createdAfter`. Omit to create an open-tail stream. Ignored on subsequent calls (use `cursor` instead).",
+                    "example": "2026-03-31T23:59:59Z"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of records to return per call. Clamped to the range [1, 1000]. Defaults to 100.",
+                    "minimum": 1,
+                    "maximum": 1000,
+                    "default": 100,
+                    "example": 100
+                  }
+                }
+              },
+              "examples": {
+                "startFromNow": {
+                  "summary": "Start streaming from now (no filters)",
+                  "description": "Omit all date and filter fields to begin a real-time tail starting from the current moment.",
+                  "value": {}
+                },
+                "openTailFromDate": {
+                  "summary": "Open-tail stream from a past date",
+                  "description": "Stream all events from a specific point in the past, continuing forward in real time. The initial window (createdAfter to now) must not exceed 90 days.",
+                  "value": {
+                    "createdAfter": "2026-06-01T00:00:00Z"
+                  }
+                },
+                "fixedWindow": {
+                  "summary": "Fixed date window",
+                  "description": "Retrieve all events within a specific time range. The cursor exhausts once the range is fully delivered.",
+                  "value": {
+                    "createdAfter": "2026-01-01T00:00:00Z",
+                    "createdBefore": "2026-03-31T23:59:59Z"
+                  }
+                },
+                "fixedWindowWithFilters": {
+                  "summary": "Fixed window with actor and event filters",
+                  "description": "Narrow the stream to specific actors and event types within a date range.",
+                  "value": {
+                    "createdAfter": "2026-01-01T00:00:00Z",
+                    "createdBefore": "2026-03-31T23:59:59Z",
+                    "actorEmails": ["admin@example.com"],
+                    "events": ["Create Project", "Clone Project", "Delete Project"]
+                  }
+                },
+                "nextPage": {
+                  "summary": "Subsequent call — advance the cursor",
+                  "description": "Pass only the nextCursor value from the previous response. No other fields should be included.",
+                  "value": {
+                    "cursor": "eyJ2IjoxLCJsYXN0SWQiOjQyLCJmcm9tRXBvY2hNcyI6MTc0ODczOTIwMDAwMCwidG9FcG9jaE1zIjpudWxsfQ=="
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A page of audit log entries with cursor state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["data", "nextCursor", "hasMore"],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Audit log entries for this page, ordered by event ID ascending (chronological order). May be empty when the stream is caught up.",
+                      "items": {
+                        "type": "object",
+                        "required": ["eventId", "actor", "event", "timestamp"],
+                        "properties": {
+                          "eventId": {
+                            "type": "integer",
+                            "description": "Unique identifier of the audit log entry.",
+                            "example": 1042
+                          },
+                          "actor": {
+                            "type": "object",
+                            "description": "The user who performed the action.",
+                            "required": ["email"],
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "Internal user PID. Absent if the user no longer exists in the system.",
+                                "example": 3
+                              },
+                              "email": {
+                                "type": "string",
+                                "description": "Login email of the user who triggered the event.",
+                                "example": "admin@example.com"
+                              },
+                              "displayName": {
+                                "type": "string",
+                                "description": "Full name of the actor (first + last). Absent if the user no longer exists in the system.",
+                                "example": "John Doe"
+                              }
+                            }
+                          },
+                          "event": {
+                            "type": "string",
+                            "description": "The type of audit event.",
+                            "example": "Create User"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Human-readable description of the action performed.",
+                            "example": "User created: jane@example.com"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "ISO 8601 UTC timestamp of when the event occurred.",
+                            "example": "2026-01-15T10:30:00Z"
+                          }
+                        }
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "description": "Opaque cursor token encoding the current position in the stream and frozen filters. Always present, even on an empty page. Pass this as `cursor` in the next request. Never discard it.",
+                      "example": "eyJ2IjoxLCJsYXN0SWQiOjEwNDIsImZyb21FcG9jaE1zIjoxNzQ4NzM5MjAwMDAwLCJ0b0Vwb2NoTXMiOm51bGx9"
+                    },
+                    "hasMore": {
+                      "type": "boolean",
+                      "description": "`true` if a full page was returned and more rows are immediately available — call again with `nextCursor` right away. `false` if the stream is caught up — wait before polling again."
+                    }
+                  }
+                },
+                "examples": {
+                  "pageWithMore": {
+                    "summary": "Full page — more results available",
+                    "description": "hasMore: true means another page is waiting. Fetch immediately.",
+                    "value": {
+                      "data": [
+                        {
+                          "eventId": 1035,
+                          "actor": {
+                            "id": 3,
+                            "email": "admin@example.com",
+                            "displayName": "John Doe"
+                          },
+                          "event": "Create User",
+                          "description": "User created: jane@example.com",
+                          "timestamp": "2026-01-15T08:12:04Z"
+                        },
+                        {
+                          "eventId": 1042,
+                          "actor": {
+                            "id": 3,
+                            "email": "admin@example.com",
+                            "displayName": "John Doe"
+                          },
+                          "event": "Create Project",
+                          "description": "Project created: Regression Suite",
+                          "timestamp": "2026-01-15T10:30:00Z"
+                        }
+                      ],
+                      "nextCursor": "eyJ2IjoxLCJsYXN0SWQiOjEwNDIsImZyb21FcG9jaE1zIjoxNzQ4NzM5MjAwMDAwLCJ0b0Vwb2NoTXMiOm51bGx9",
+                      "hasMore": true
+                    }
+                  },
+                  "caughtUp": {
+                    "summary": "Stream caught up — wait before polling",
+                    "description": "hasMore: false and an empty data array means there are no new events yet. Save nextCursor and retry after a delay.",
+                    "value": {
+                      "data": [],
+                      "nextCursor": "eyJ2IjoxLCJsYXN0SWQiOjEwNDIsImZyb21FcG9jaE1zIjoxNzQ4NzM5MjAwMDAwLCJ0b0Vwb2NoTXMiOm51bGx9",
+                      "hasMore": false
+                    }
+                  },
+                  "deletedActorEvent": {
+                    "summary": "Event from a deleted user — id and displayName absent",
+                    "description": "When the actor no longer exists in the system, only email is populated.",
+                    "value": {
+                      "data": [
+                        {
+                          "eventId": 1039,
+                          "actor": {
+                            "email": "former.admin@example.com"
+                          },
+                          "event": "Delete User",
+                          "description": "User deleted: old.user@example.com",
+                          "timestamp": "2026-01-10T14:22:00Z"
+                        }
+                      ],
+                      "nextCursor": "eyJ2IjoxLCJsYXN0SWQiOjEwMzksImZyb21FcG9jaE1zIjoxNzQ4NzM5MjAwMDAwLCJ0b0Vwb2NoTXMiOm51bGx9",
+                      "hasMore": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request — invalid filter value or constraint violation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "cursorWithFilters": {
+                    "summary": "Cursor sent together with filters or dates",
+                    "value": { "error": "Do not send filters or dates with a cursor. To change filters, start a new sync without a cursor." }
+                  },
+                  "createdAfterInFuture": {
+                    "summary": "createdAfter is in the future",
+                    "value": { "error": "'createdAfter' cannot be in the future." }
+                  },
+                  "createdAfterExceedsRetention": {
+                    "summary": "createdAfter older than 1-year retention window",
+                    "value": { "error": "'createdAfter' exceeds the 1-year retention window." }
+                  },
+                  "openTailWindowTooLarge": {
+                    "summary": "Open-tail window exceeds 90 days",
+                    "value": { "error": "Window exceeds 90 days. Provide 'createdBefore' to use an explicit range." }
+                  },
+                  "createdBeforeWithoutCreatedAfter": {
+                    "summary": "createdBefore sent without createdAfter",
+                    "value": { "error": "'createdBefore' requires 'createdAfter'." }
+                  },
+                  "createdBeforeNotAfterCreatedAfter": {
+                    "summary": "createdBefore is not after createdAfter",
+                    "value": { "error": "'createdBefore' must be after 'createdAfter'." }
+                  },
+                  "fixedWindowTooLarge": {
+                    "summary": "Fixed window exceeds 90 days",
+                    "value": { "error": "Window exceeds 90 days. Narrow your date range." }
+                  },
+                  "invalidDateFormat": {
+                    "summary": "Unrecognised date format",
+                    "value": { "error": "'createdAfter' must be an ISO-8601 timestamp with UTC offset (e.g. 2026-06-23T00:00:00Z)." }
+                  },
+                  "invalidEvent": {
+                    "summary": "Unrecognised event type",
+                    "value": { "error": "Invalid event: 'Unknown Event'." }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — caller does not have Tenant Admin privileges.",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "example": {
+                  "error": "User do not have authorization to access this feature."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
